@@ -117,7 +117,7 @@ If you want to start developing with solid foundations and good security default
 
 If you want to use this as the basis for your own project, fork this repository into your own version control environment.
 
-<iframe src="https://ghbtns.com/github-btn.html?user=rescommunes&repo=compass-ops&type=fork" frameborder="0" scrolling="0" width="150" height="20" title="Github"></iframe>
+[![GitHub forks](https://img.shields.io/github/forks/rescommunes/compass-ops?label=Fork&style=social)](https://github.com/rescommunes/compass-ops/fork)
 
 > If you want to commit your secrets to your own repo then in `.gitignore` remove the entries `env/**/secrets.sops.yaml` and`env/**/values.yaml`.
 >
