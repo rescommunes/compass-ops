@@ -1,0 +1,87 @@
+## ignore the sops encrypted secrets files in env folder
+env/**/secrets.sops.yaml
+
+## igore the values.yaml file in the env folders
+env/**/values.yaml
+
+#  Local configuration files
+**/local
+**/local/
+**/local.*
+**/*.local
+**/*.local.*
+**/.local
+**/.local/
+**/.local.*
+
+.sops.yaml
+
+# macOS
+.DS_Store
+.AppleDouble
+._*
+__MACOSX/
+
+# IDEs / editors
+.idea/
+.vscode/
+*.iml
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+.venv/
+env.*
+pip-wheel-metadata/
+build/
+dist/
+*.egg-info/
+*.egg
+.pytest_cache/
+.mypy_cache/
+coverage.xml
+.coverage
+htmlcov/
+
+# Local dev / runtime files
+**/*local*
+*.local
+local/
+tmp/
+*.log
+*.pid
+*.sock
+
+# Kubernetes / TLS / secrets (avoid committing keys/certs/kubeconfigs)
+kubeconfig
+*.kubeconfig
+.kube/
+secrets/
+certs/
+tls/
+*.pem
+*.key
+*.crt
+*.p12
+*.csr
+*.jks
+helmfile.lock
+
+# Helm / packaged charts
+*.tgz
+
+# Node / frontend
+node_modules/
+npm-debug.log
+yarn-error.log
+dist/
+
+# Editor swap / temp files
+*~
+*.swp
+*.swo
+
+

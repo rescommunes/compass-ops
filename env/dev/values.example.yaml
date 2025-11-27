@@ -1,0 +1,36 @@
+# update and rename to values.yaml
+env:
+  domain: your root domain here e.g. dev.example.com
+  email: working email for cert-manager notifications
+  certificate:
+    tlsWildCardSecretName: dev-wildcard-tls
+    clusterIssuer: staging # (staging | prod)
+
+  dns:
+    secretName: dns-credentials
+
+    ## choose a dns provider and uncomment the relevant section by removing the leading '#'
+    ##  and filling in the required values
+
+    ## Route53
+    # dnsProvider: Route53
+    # region: your AWS region e.g. us-east-1
+    # zoneID: your Route53 Hosted Zone ID
+    # accessKeyID: your AWS Access Key ID
+
+
+    ## Cloudflare example values
+    # dnsProvider: cloudflare
+
+    ## Google
+    # dnsProvider: clouddns
+    # project: my-gcp-project
+
+    ## azure
+    # clientID: your-client-id
+    # tenantID: your-tenant-id
+    # subscriptionID: your-subscription-id
+    # resourceGroupName: your-resource-group-name
+
+
+

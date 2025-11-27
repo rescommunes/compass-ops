@@ -1,0 +1,122 @@
+helmDefaults:
+  wait: true
+  timeout: 600
+  createNamespace: true
+
+environments:
+  dev:
+    values:
+      - ./env/dev/values.yaml
+      - ./env/dev/proxy.values.yaml
+    secrets:
+      - ./env/dev/secrets.sops.yaml
+  prod:
+    values:
+      - ./env/prod/values.yaml
+    secrets:
+      - ./env/prod/secrets.sops.yaml
+
+repositories:
+  - name: jetstack
+    url: https://charts.jetstack.io
+  - name: traefik
+    url: https://traefik.github.io/charts
+  - name: cnpg
+    url: https://cloudnative-pg.github.io/charts
+  - name: ory
+    url: https://k8s.ory.sh/helm/charts
+  - name: raw
+    url: https://bedag.github.io/helm-charts/
+
+---
+
+releases:
+
+  #  ensure the namespaces exist, case we add to it then create it later
+  - name: create-namespaces
+    namespace: kube-system
+    chart: raw/raw
+    version: 2.0.2
+    values:
+      - resources:
+          - apiVersion: v1
+            kind: Namespace
+            metadata:
+              name: networking
+
+  - name: cert-manager
+    namespace: cert-manager
+    chart: jetstack/cert-manager
+    version: "~1.19.0"
+    set:
+      - name: crds.enabled
+        value: true
+    values:
+      # dns to use for the dns-01 challenge isn't resolving, this helps
+      - extraArgs:
+          - --dns01-recursive-nameservers=8.8.8.8:53,1.1.1.1:53
+          - --dns01-recursive-nameservers-only
+
+  - name: certmanager-issuers
+    namespace: cert-manager
+    chart: ./charts/certmanager-issuers
+    needs:
+      - "cert-manager/cert-manager"
+    values:
+      - ./charts/certmanager-issuers/values.yaml
+      - ./env/{{ .Environment.Name }}/values.yaml
+      - createSecret: false
+        createIssuers: true
+    secrets:
+      - ./env/{{ .Environment.Name }}/secrets.sops.yaml
+
+  - name: traefik
+    namespace: networking
+    chart: traefik/traefik
+    version: "~37.0.0"
+    needs:
+        - "cert-manager/cert-manager"
+        - "cert-manager/certmanager-issuers"
+    values:
+      - ./charts/traefik/values.yaml.gotmpl
+
+  - name: traefik-routes
+    namespace: networking
+    chart: ./charts/traefik
+    needs:
+      - "networking/traefik"
+    values:
+      - ./env/{{ .Environment.Name }}/values.yaml
+
+
+  - name: cnpg-operator
+    namespace: database
+    chart: cnpg/cloudnative-pg
+    version: "~0.23.0"
+
+  - name: postgres-storage
+    namespace: database
+    chart: ./charts/postgres
+    needs:
+      - database/cnpg-operator
+
+  - name: postgres-cluster
+    namespace: database
+    chart: cnpg/cluster
+    version: "~0.1.0"
+    needs:
+      - database/postgres-storage
+    values:
+      - ./charts/postgres/values.yaml.gotmpl
+      - ./env/{{ .Environment.Name }}/values.yaml
+
+  - name: application
+    # todo: change to your desired namespace
+    namespace: default
+    chart: ./charts/application
+    needs:
+      - "networking/traefik-routes"
+      - "database/postgres-cluster"
+    values:
+      - ./env/{{ .Environment.Name }}/values.yaml
+      - ./env/{{ .Environment.Name }}/proxy.values.yaml

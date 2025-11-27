@@ -1,0 +1,11 @@
+issuers:
+
+  letsencrypt-staging:
+    name: letsencrypt-staging
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    accountSecret: acme-account-staging
+
+  letsencrypt-prod:
+    name: letsencrypt-prod
+    server: https://acme-v02.api.letsencrypt.org/directory
+    accountSecret: acme-account-prod

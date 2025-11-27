@@ -1,0 +1,24 @@
+# this is the default https redirect
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: redirect-http-to-https
+  namespace: networking
+spec:
+  parentRefs:
+    - name: traefik-gateway
+      namespace: networking
+      sectionName: http-fqdn
+  hostnames:
+    - "{{ .Values.env.domain }}"
+    - "*.{{ .Values.env.domain }}"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301

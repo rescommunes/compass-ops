@@ -1,0 +1,54 @@
+{{- $issuerKey := default "staging" .Values.env.certificate.issuer | lower -}}
+{{- $issuer := index .Values.issuers $issuerKey -}}
+{{- $provider := default "route53" .Values.env.dns.dnsProvider | lower -}}
+
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: {{ $issuer.name }}
+spec:
+  acme:
+    email: {{ .Values.env.email | quote }}
+    server: {{ $issuer.server | quote }}
+    privateKeySecretRef:
+      name: {{ $issuer.accountSecret }}
+    solvers:
+      - dns01:
+          {{- if eq $provider "route53" }}
+          route53:
+            hostedZoneID: {{ .Values.env.dns.zoneID | quote }}
+            region: {{ .Values.env.dns.region | quote }}
+            accessKeyIDSecretRef:
+              name: {{ .Values.env.dns.secretName }}
+              key: access-key-id
+            secretAccessKeySecretRef:
+              name: {{ .Values.env.dns.secretName }}
+              key: secret-access-key
+
+          {{- else if eq $provider "cloudflare" }}
+          cloudflare:
+            apiTokenSecretRef:
+              name: {{ .Values.env.dns.secretName }}
+              key: api-token
+
+          {{- else if  eq $provider "clouddns" }}
+          googleCloudDNS:
+            project: {{ .Values.env.dns.project | quote }}
+            serviceAccountSecretRef:
+              name: {{ .Values.env.dns.secretName }}
+              key: service-account.json
+
+          {{- else if eq $provider "azuredns" }}
+          azureDNS:
+            clientID: {{ .Values.env.dns.clientID | quote }}
+            tenantID: {{ .Values.env.dns.tenantID | quote }}
+            subscriptionID: {{ .Values.env.dns.subscriptionID | quote }}
+            resourceGroupName: {{ .Values.env.dns.resourceGroupName | quote }}
+            hostedZoneName: {{ .Values.env.domain | quote }}
+            clientSecretSecretRef:
+              name: {{ .Values.env.dns.secretName }}
+              key: client-secret
+
+          {{- else }}
+          {{- fail (printf "Unsupported env.dns.dnsProvider %q. Supported: Route53, CloudFlare, Google, AzureDNS" .Values.env.dns.dnsProvider) }}
+          {{- end }}

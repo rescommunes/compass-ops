@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ .Values.env.certificate.tlsWildCardSecretName | quote }}
+  # notice this is deployed to the 'networking' namespace
+  namespace: networking
+spec:
+  secretName: {{ .Values.env.certificate.tlsWildCardSecretName | quote }}
+  issuerRef:
+    name: {{ .Values.env.certificate.issuer | quote }}
+    kind: ClusterIssuer
+  dnsNames:
+    - "{{ .Values.env.domain }}"
+    - "*.{{ .Values.env.domain }}"
+  privateKey:
+    rotationPolicy: Always
+    algorithm: RSA
+    size: 2048

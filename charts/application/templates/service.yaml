@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: application
+  labels:
+    app: application
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+      protocol: TCP
+
+---
+
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: application
+subsets:
+  - addresses:
+      - ip: {{ .Values.compassGateProxy.hostIP }}
+    ports:
+      - name: http
+        port: {{ .Values.compassGateProxy.port }}
+        protocol: TCP
