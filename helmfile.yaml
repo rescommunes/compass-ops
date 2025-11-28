@@ -114,8 +114,7 @@ releases:
       - ./env/{{ .Environment.Name }}/values.yaml
 
   - name: application
-    # todo: change to your desired namespace
-    namespace: default
+    namespace: application
     chart: ./charts/application
     needs:
       - "networking/traefik-routes"
