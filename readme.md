@@ -278,6 +278,9 @@ For an HTTP application served on your host IP, enable the proxy configuration a
 
 Edit `env/dev/proxy.values.yaml` and update the `name`, `hostPort`, `hostIP` and `exposed` values as needed.
 
+If you want to expose the postgres database for local development, set `exposed: true` under the `postgres` section.
+
+
 ```yaml
 
 #### Run via Minikube

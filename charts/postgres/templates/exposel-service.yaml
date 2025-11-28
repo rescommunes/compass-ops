@@ -1,0 +1,18 @@
+{{- if and .Values.proxy .Values.proxy.postgres .Values.proxy.postgres.exposed }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ default "postgres-dev-external" .Values.proxy.postgres.serviceName }}
+  namespace: database
+spec:
+  type: LoadBalancer
+  ports:
+    - name: postgres
+      port: {{ default 5432 .Values.proxy.postgres.exposePort }}
+      targetPort: 5432
+  selector:
+    # This must match your CNPG cluster's labels.
+    # Commonly the cluster name is "postgres-cluster" – adjust if yours is different.
+    cnpg.io/cluster: postgres-cluster
+    role: primary
+{{- end }}
