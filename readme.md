@@ -276,7 +276,9 @@ Copy the file `env/dev/proxy.example.yaml` to `env/dev/proxy.values.yaml`.
 
 For an HTTP application served on your host IP, enable the proxy configuration as follows. This is only loaded in the dev environment; production does not use `proxy.values.yaml`.
 
-Edit `env/dev/proxy.values.yaml`  And update the `port` and `hostIP`
+Edit `env/dev/proxy.values.yaml` and update the `name`, `hostPort`, `hostIP` and `exposed` values as needed.
+
+```yaml
 
 #### Run via Minikube
 
