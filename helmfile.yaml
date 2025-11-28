@@ -94,7 +94,7 @@ releases:
     chart: cnpg/cloudnative-pg
     version: "~0.23.0"
 
-  - name: postgres-storage
+  - name: postgres
     namespace: database
     chart: ./charts/postgres
     needs:
@@ -108,7 +108,7 @@ releases:
     chart: cnpg/cluster
     version: "~0.1.0"
     needs:
-      - database/postgres-storage
+      - database/postgres
     values:
       - ./charts/postgres/values.yaml.gotmpl
       - ./env/{{ .Environment.Name }}/values.yaml
