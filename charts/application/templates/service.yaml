@@ -1,9 +1,12 @@
+{{- if and .Values.proxy .Values.proxy.applications }}
+{{- range .Values.proxy.applications }}
+{{- if .exposed }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: application
+  name: {{ .name }}
   labels:
-    app: application
+    app: {{ .name }}
 spec:
   type: ClusterIP
   clusterIP: None
@@ -12,17 +15,19 @@ spec:
       port: 80
       targetPort: 8080
       protocol: TCP
-
 ---
-
 apiVersion: v1
 kind: Endpoints
 metadata:
-  name: application
+  name: {{ .name }}
 subsets:
   - addresses:
-      - ip: {{ .Values.compassGateProxy.hostIP }}
+      - ip: {{ .hostIP }}
     ports:
       - name: http
-        port: {{ .Values.compassGateProxy.port }}
+        port: {{ .hostPort }}
         protocol: TCP
+---
+{{- end }}
+{{- end }}
+{{- end }}

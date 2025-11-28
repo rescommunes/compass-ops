@@ -1,0 +1,11 @@
+proxy:
+  applications:
+    # This hostIP/hostPort needs to be accessible from within the cluster (RFC1918/private network facing IP)
+    - name: app
+      exposed: false
+      hostPort: 8001
+      hostIP: "192.168.2.18"
+    - name: app2
+      exposed: false
+      hostPort: 5123
+      hostIP: "192.168.2.18"
