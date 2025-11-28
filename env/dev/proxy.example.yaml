@@ -9,3 +9,8 @@ proxy:
       exposed: false
       hostPort: 5123
       hostIP: "192.168.2.18"
+  postgres:
+    exposed: false
+    serviceName: postgres-dev-external
+    exposePort: 5432
+
