@@ -119,7 +119,7 @@ If you want to use this as the basis for your own project, fork this repository 
 
 [![GitHub forks](https://img.shields.io/github/forks/rescommunes/compass-ops?label=Fork&style=social)](https://github.com/rescommunes/compass-ops/fork)
 
-> If you want to commit your secrets to your own repo then in `.gitignore` remove the entries `env/**/secrets.sops.yaml` and`env/**/values.yaml`.
+> If you want to commit your secrets to your own repo then in `.gitignore` remove the entries `env/**/secrets.sops.yaml`, `env/**/proxy.values.yaml` and`env/**/values.yaml`.
 >
 > ```ini
 > ## ignore the sops encrypted secrets files in env folder
@@ -127,6 +127,9 @@ If you want to use this as the basis for your own project, fork this repository 
 > 
 > ## ignore the values.yaml file in the env folders
 > env/**/values.yaml
+> 
+> ## igore the values.yaml file in the env folders
+> env/**/proxy.values.yaml
 > ```
 
 ### Software Dependencies
@@ -269,9 +272,13 @@ To decrypt the file for editing run  `sh ./bin/secrets.sh dev decrypt`.
 
 #### Proxy Configs
 
+Copy the file `env/dev/proxy.example.yaml` to `env/dev/proxy.values.yaml`.
+
 For an HTTP application served on your host IP, enable the proxy configuration as follows. This is only loaded in the dev environment; production does not use `proxy.values.yaml`.
 
-Edit `env/dev/proxy.values.yaml`  And update the `port` and `hostIP`
+Edit `env/dev/proxy.values.yaml` and update the `name`, `hostPort`, `hostIP` and `exposed` values as needed.
+
+```yaml
 
 #### Run via Minikube
 

@@ -1,5 +1,0 @@
-compassGateProxy:
-  enabled: true
-  port: 8001
-  # This ip needs to be accessible from within the cluster (RFC1918/private network facing IP)
-  hostIP: "192.168.2.18"

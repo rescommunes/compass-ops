@@ -4,6 +4,9 @@ env/**/secrets.sops.yaml
 ## igore the values.yaml file in the env folders
 env/**/values.yaml
 
+## igore the values.yaml file in the env folders
+env/**/proxy.values.yaml
+
 #  Local configuration files
 **/local
 **/local/
