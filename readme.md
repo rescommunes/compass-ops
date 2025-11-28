@@ -238,7 +238,7 @@ env:
     accessKeyID: ABCD1234
 ```
 
-Update the `env` section values `domain` and `email` (used for Let’s Encrypt registration).
+Update the `env` section values `domain` and `email` (used for [Let’s Encrypt](https://letsencrypt.org/) registration).
 
 You can change **`certificate.clusterIssuer`** to `letsencrypt-prod` once your setup is stable and you’re no longer requesting certificates frequently. Use `letsencrypt-staging` during setup to avoid rate limits—staging certs must be manually accepted like self-signed ones.  
 
