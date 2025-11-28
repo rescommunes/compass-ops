@@ -69,6 +69,9 @@ compass-ops provides a **ready-to-use foundation** built around a modern, secure
     
     * [x] HTTP
     * [ ] WebSockets
+
+  - [ ] Dev tools
+    - [ ] MailHog: email capture/testing tool for development 
   
   - [ ] Examples of container integration 
 
