@@ -284,7 +284,7 @@ Edit `env/dev/proxy.values.yaml` and update the `name`, `hostPort`, `hostIP` and
 If you want to expose the postgres database for local development, set `exposed: true` under the `postgres` section.
 
 
-```yaml
+
 
 #### Run via Minikube
 
