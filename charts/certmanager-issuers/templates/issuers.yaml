@@ -1,4 +1,4 @@
-{{- $issuerKey := default "staging" .Values.env.certificate.issuer | lower -}}
+{{- $issuerKey := default "letsencrypt-staging" .Values.env.certificate.issuer | lower -}}
 {{- $issuer := index .Values.issuers $issuerKey -}}
 {{- $provider := default "route53" .Values.env.dns.dnsProvider | lower -}}
 
