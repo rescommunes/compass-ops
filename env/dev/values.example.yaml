@@ -4,7 +4,7 @@ env:
   email: working email for cert-manager notifications
   certificate:
     tlsWildCardSecretName: dev-wildcard-tls
-    clusterIssuer: staging # (staging | prod)
+    issuer: letsencrypt-staging # (letsencrypt-staging | letsencrypt-prod)
 
   dns:
     secretName: dns-credentials
