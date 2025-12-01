@@ -158,8 +158,7 @@ This extension manages the decryption of secrets when syncing with your charts.
 > 📝 See [jkroepke/helm-secrets](https://github.com/jkroepke/helm-secrets/wiki/Installation) 
 
 1. `helm plugin install https://github.com/jkroepke/helm-secrets/releases/download/v4.7.4/secrets-4.7.4.tgz --verify=false`
-2. `helm plugin install https://github.com/jkroepke/helm-secrets/releases/download/v4.7.4/secrets-getter-4.7.4.tgz --verify=false` 
-
+2. `helm plugin install https://github.com/jkroepke/helm-secrets/releases/download/v4.7.4/secrets-getter-4.7.4.tgz --verify=false`
 3. `helm plugin install https://github.com/jkroepke/helm-secrets/releases/download/v4.7.4/secrets-post-renderer-4.7.4.tgz --verify=false`
 
 ### DNS Configuration
@@ -196,7 +195,7 @@ To get started with compass-ops locally, follow these steps:
 > 📝We are using a Minikube profile named compass. If you want to run additional Minikube environments, give them different profile names.
 
 ```bash
-minikube start -p compass --driver=docker --cpus=4 --memory=8192 --mount=true --mount-string="$HOME/dev-storage"
+minikube start -p compass --driver=docker --cpus=4 --memory=8192 --mount=true --mount-string="$HOME/dev-storage:/cnpg"
 ```
 
 The above command starts a Minikube instance using the `compass` profile and the `Docker` driver. Adjust `--cpus` and `--memory` as needed.
@@ -218,7 +217,7 @@ Adding **dashboard** allows you to use the Kubernetes web UI `minikube -p compas
 To wrap up the Minikube setup, the **tunnel** command exposes LoadBalancer services by creating a local network tunnel. Because it forwards privileged ports such as 80 and 443, you’ll need to run it with superuser privileges.
 
 ```bash
-sudo minikube tunnel -p compass
+sudo -E minikube tunnel -p compass --bind-address 127.0.0.1
 ```
 
 ### Initial Compass Configuration
@@ -309,8 +308,6 @@ helmfile -e dev sync
 It provides integrated authentication, authorization, and user management using **Ory Kratos**, **Hydra**, and **Oathkeeper**.
 
 Together, **compass-ops** and **compass-gate** deliver a complete foundation for secure, production-ready service development:
-
-
 
 - **compass-ops** handles orchestration, observability, and infrastructure setup.  
 - **compass-gate** manages identity, OAuth2 clients, and access control policies.  
