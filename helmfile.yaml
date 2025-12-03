@@ -113,6 +113,12 @@ releases:
       - ./charts/postgres/values.yaml.gotmpl
       - ./env/{{ .Environment.Name }}/values.yaml
 
+  - name: mailhog
+    namespace: tools
+    chart: ./charts/mailhog
+    values:
+      - ./charts/mailhog/values.yaml.gotmpl
+
   - name: application
     namespace: application
     chart: ./charts/application
