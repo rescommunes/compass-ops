@@ -6,3 +6,12 @@ cluster:
   storage:
     size: 1Gi
     storageClass: cnpg-hostpath
+
+  managed:
+    roles:
+    {{-  range .Values.env.secrets.postgres.databases }}
+      - name: {{ .name }}
+        login: true
+        passwordSecret:
+          name: postgres-cluster-{{ .name }}
+    {{-  end }}

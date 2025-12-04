@@ -102,6 +102,8 @@ releases:
     values:
       - ./env/{{ .Environment.Name }}/values.yaml
       - ./env/{{ .Environment.Name }}/proxy.values.yaml
+    secrets:
+      - ./env/{{ .Environment.Name }}/secrets.sops.yaml
 
   - name: postgres-cluster
     namespace: database
