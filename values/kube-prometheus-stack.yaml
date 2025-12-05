@@ -2,7 +2,7 @@
 grafana:
   enabled: true
   adminUser: admin
-  adminPassword: changeme
+  adminPassword: {{ .Values.env.secrets.grafana.password }}
   service:
     type: ClusterIP
   ingress:
