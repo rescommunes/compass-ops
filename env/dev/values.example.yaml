@@ -2,6 +2,12 @@
 env:
   domain: your root domain here e.g. dev.example.com
   email: working email for cert-manager notifications
+  smtpConnectionUri: smtp://mailhog.tools.svc.cluster.local:1025
+  subdomains:
+    mailhog: mailhog
+    kratos: kratos
+    account: account
+
   certificate:
     tlsWildCardSecretName: dev-wildcard-tls
     issuer: letsencrypt-staging # (letsencrypt-staging | letsencrypt-prod)
