@@ -1,0 +1,14 @@
+cluster:
+  instances: 1
+  storage:
+    size: 1Gi
+  monitoring:
+    enabled: true
+
+  roles:
+{{-  range .Values.env.secrets.postgres.databases }}
+    - name: {{ .name }}
+      ensure: present
+      login: true
+{{-  end }}
+

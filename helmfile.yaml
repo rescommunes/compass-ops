@@ -27,10 +27,17 @@ repositories:
     url: https://k8s.ory.sh/helm/charts
   - name: raw
     url: https://bedag.github.io/helm-charts/
+  - name: prometheus-community
+    url: https://prometheus-community.github.io/helm-charts
+  - name: grafana
+    url: https://grafana.github.io/helm-charts
+  - name: cnpg-grafana
+    url: https://cloudnative-pg.github.io/grafana-dashboards
 
 ---
 
 releases:
+
 
   #  ensure the namespaces exist, case we add to it then create it later
   - name: create-namespaces
@@ -43,6 +50,18 @@ releases:
             kind: Namespace
             metadata:
               name: networking
+
+
+  - name: kube-prometheus-stack
+    namespace: monitoring
+    createNamespace: true
+    labels:
+      app: monitoring
+    chart: prometheus-community/kube-prometheus-stack
+    version: "~65.0.0"
+    values:
+      - ./values/kube-prometheus-stack.yaml
+
 
   - name: cert-manager
     namespace: cert-manager
@@ -57,76 +76,101 @@ releases:
           - --dns01-recursive-nameservers=8.8.8.8:53,1.1.1.1:53
           - --dns01-recursive-nameservers-only
 
-  - name: certmanager-issuers
+
+  - name: certificates
     namespace: cert-manager
-    chart: ./charts/certmanager-issuers
+    chart: ./charts/certificates
     needs:
-      - "cert-manager/cert-manager"
-    values:
-      - ./charts/certmanager-issuers/values.yaml
-      - ./env/{{ .Environment.Name }}/values.yaml
-      - createSecret: false
-        createIssuers: true
+      - cert-manager/cert-manager
     secrets:
       - ./env/{{ .Environment.Name }}/secrets.sops.yaml
+    values:
+      - ./env/{{ .Environment.Name }}/values.yaml
+      - ./charts/certificates/values.yaml
 
   - name: traefik
     namespace: networking
     chart: traefik/traefik
-    version: "~37.0.0"
+    version: "~37.4.0"
     needs:
-        - "cert-manager/cert-manager"
-        - "cert-manager/certmanager-issuers"
+        - cert-manager/certificates
     values:
-      - ./charts/traefik/values.yaml.gotmpl
+      - ./values/traefik.yaml.gotmpl
 
   - name: traefik-routes
     namespace: networking
     chart: ./charts/traefik
     needs:
-      - "networking/traefik"
+      - networking/traefik
     values:
       - ./env/{{ .Environment.Name }}/values.yaml
 
+  - name: cnpg-grafana
+    namespace: monitoring
+    chart: cnpg-grafana/cluster
+    version: "0.0.5"
 
   - name: cnpg-operator
     namespace: database
     chart: cnpg/cloudnative-pg
-    version: "~0.23.0"
+    version: "~0.26.1"
+    set:
+      - name: crds.create
+        value: true
 
   - name: postgres
     namespace: database
     chart: ./charts/postgres
     needs:
       - database/cnpg-operator
-    values:
-      - ./env/{{ .Environment.Name }}/values.yaml
-      - ./env/{{ .Environment.Name }}/proxy.values.yaml
     secrets:
       - ./env/{{ .Environment.Name }}/secrets.sops.yaml
+    values:
+      - ./env/{{ .Environment.Name }}/values.yaml
 
   - name: postgres-cluster
     namespace: database
     chart: cnpg/cluster
-    version: "~0.1.0"
+    version: "~0.3.1"
     needs:
-      - database/postgres
+      - database/cnpg-operator
+    secrets:
+      - ./env/{{ .Environment.Name }}/secrets.sops.yaml
     values:
-      - ./charts/postgres/values.yaml.gotmpl
       - ./env/{{ .Environment.Name }}/values.yaml
+      - ./values/postgres-cluster.yaml.gotmpl
 
   - name: mailhog
     namespace: tools
     chart: ./charts/mailhog
+    needs:
+      - networking/traefik-routes
     values:
       - ./charts/mailhog/values.yaml.gotmpl
+
+
+
+#  - name: kratos
+#    namespace: ory
+#    chart: ory/kratos
+#    version: "~0.58.0"
+#    needs:
+#      - database/postgres-cluster
+#      - tools/mailhog
+#    values:
+#      - charts/kratos/values.yaml.gotmpl
+##    secrets:
+##      - charts/kratos/secrets.sops.yaml
+
 
   - name: application
     namespace: application
     chart: ./charts/application
     needs:
-      - "networking/traefik-routes"
-      - "database/postgres-cluster"
+      - networking/traefik-routes
+      - database/postgres-cluster
+    secrets:
+      - ./env/{{ .Environment.Name }}/secrets.sops.yaml
     values:
       - ./env/{{ .Environment.Name }}/values.yaml
       - ./env/{{ .Environment.Name }}/proxy.values.yaml

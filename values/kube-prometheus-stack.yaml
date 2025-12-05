@@ -1,0 +1,28 @@
+# Enable Grafana inside the stack
+grafana:
+  enabled: true
+  adminUser: admin
+  adminPassword: changeme
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: true
+    ingressClassName: traefik   # or whatever your ingress class is
+    hosts:
+      - grafana.dev.codehesion.net     # change to your host
+    paths:
+      - /
+
+prometheus:
+  prometheusSpec:
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - prometheus.dev.codehesion.net
+    paths:
+      - /

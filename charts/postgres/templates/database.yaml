@@ -1,13 +1,16 @@
+
 {{-  range .Values.env.secrets.postgres.databases }}
+
 apiVersion: v1
 kind: Secret
+type:  kubernetes.io/basic-auth
 metadata:
     name: postgres-cluster-{{ .name }}
+    namespace:  "database"
     labels:
       cnpg.io/reload: "true"
-type:  kubernetes.io/basic-auth
 stringData:
     username: {{ .name | quote }}
     password: {{ .password | quote }}
----
-{{- end }}
+
+{{-  end }}

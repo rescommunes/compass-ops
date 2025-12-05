@@ -1,4 +1,6 @@
 apiVersion: v2
-name: postgres
-version: 0.1.0
+name: posgress
+description: compass postgres settings
 type: application
+version: 0.1.0
+appVersion: "1.0.0"
