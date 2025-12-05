@@ -6,12 +6,12 @@ cluster:
     enabled: true
 
   roles:
-{{-  range .Values.env.secrets.postgres.roles }}
-    - name: {{ .name }}
+{{- range $name := keys .Values.env.secrets.postgres.passwords }}
+    - name: {{ $name }}
       ensure: present
       login: true
       passwordSecret:
-          name: postgres-cluster-{{ .name }}
+          name: postgres-cluster-{{ $name }}
 {{-  end }}
 
 
