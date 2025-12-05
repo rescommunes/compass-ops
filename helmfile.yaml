@@ -151,17 +151,18 @@ releases:
 
 
 
-#  - name: kratos
-#    namespace: ory
-#    chart: ory/kratos
-#    version: "~0.58.0"
-#    needs:
-#      - database/postgres-cluster
-#      - tools/mailhog
-#    values:
-#      - charts/kratos/values.yaml.gotmpl
-##    secrets:
-##      - charts/kratos/secrets.sops.yaml
+  - name: kratos
+    namespace: ory
+    chart: ory/kratos
+    version: "~0.58.0"
+    needs:
+      - database/postgres-cluster
+      - tools/mailhog
+    secrets:
+      - ./env/{{ .Environment.Name }}/secrets.sops.yaml
+    values:
+      - ./env/{{ .Environment.Name }}/values.yaml
+      - ./values/kratos.yaml.gotmpl
 
 
   - name: application
