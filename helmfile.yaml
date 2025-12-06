@@ -59,8 +59,10 @@ releases:
       app: monitoring
     chart: prometheus-community/kube-prometheus-stack
     version: "~65.0.0"
+    secrets:
+      - ./env/{{ .Environment.Name }}/secrets.sops.yaml
     values:
-      - ./values/kube-prometheus-stack.yaml
+      - ./values/kube-prometheus-stack.yaml.gotmpl
 
 
   - name: cert-manager

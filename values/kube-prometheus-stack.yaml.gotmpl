@@ -1,0 +1,34 @@
+# Enable Grafana inside the stack
+grafana:
+  enabled: true
+  adminUser: admin
+  adminPassword: {{ .Values.env.secrets.grafana.password }}
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+      traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+    hosts:
+      - grafana.{{ .Values.env.domain }}
+    paths:
+      - /
+
+prometheus:
+  prometheusSpec:
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+      traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+    hosts:
+      - prometheus.{{ .Values.env.domain }}
+    paths:
+      - /
