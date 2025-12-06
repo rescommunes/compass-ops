@@ -1,5 +1,6 @@
 {{- $pw := .Values.env.secrets.postgres.passwords.kratos -}}
 kratos:
+
   automigration:
     enabled: true
     type: initContainer
@@ -148,4 +149,32 @@ kratos:
           }
         }
     
-    
+
+serviceMonitor:
+  enabled: true
+
+
+ingress:
+  public:
+    enabled: true
+    className: traefik
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+      traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+    hosts:
+      - host: kratos.{{ .Values.env.domain }}
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+  admin:
+    enabled: true
+    className: traefik
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+      traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+    hosts:
+    - host: kratos.admin.{{ .Values.env.domain }}
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+
