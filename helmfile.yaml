@@ -34,6 +34,7 @@ repositories:
   - name: cnpg-grafana
     url: https://cloudnative-pg.github.io/grafana-dashboards
 
+
 ---
 
 releases:
@@ -150,8 +151,6 @@ releases:
       - networking/traefik-routes
     values:
       - ./charts/mailhog/values.yaml.gotmpl
-
-
 
   - name: kratos
     namespace: ory

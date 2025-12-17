@@ -10,7 +10,7 @@ grafana:
     ingressClassName: traefik
     annotations:
       traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
-      traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+      traefik.ingress.kubernetes.io/router.middlewares: networking-redirect-https@kubernetescrd
     hosts:
       - grafana.{{ .Values.env.domain }}
     paths:
@@ -27,7 +27,7 @@ prometheus:
     ingressClassName: traefik
     annotations:
       traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
-      traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+      traefik.ingress.kubernetes.io/router.middlewares: networking-redirect-https@kubernetescrd
     hosts:
       - prometheus.{{ .Values.env.domain }}
     paths:

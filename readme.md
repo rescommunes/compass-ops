@@ -302,15 +302,6 @@ helmfile -e dev sync
 
 ## 🧩 Other Compass Projects
 
-### [🛡️ compass-gate](https://github.com/rescommunes/compass-gate)
+### [🛡️ compass-kratos-ui](https://github.com/rescommunes/compass-kratos-ui)
 
-**compass-gate** is the identity and access portal for compass-ops.  
-It provides integrated authentication, authorization, and user management using **Ory Kratos**, **Hydra**, and **Oathkeeper**.
-
-Together, **compass-ops** and **compass-gate** deliver a complete foundation for secure, production-ready service development:
-
-- **compass-ops** handles orchestration, observability, and infrastructure setup.  
-- **compass-gate** manages identity, OAuth2 clients, and access control policies.  
-
-If you’re deploying compass-ops, you’ll want to check out **compass-gate** for end-to-end security integration.
-
+**compass-kratos-ui** is the identity and access portal for compass-ops.  
