@@ -71,7 +71,7 @@ compass-ops provides a **ready-to-use foundation** built around a modern, secure
     * [ ] WebSockets
 
   - [ ] Dev tools
-    - [ ] MailHog: email capture/testing tool for development 
+    - [x] MailHog: email capture/testing tool for development 
   
   - [ ] Examples of container integration 
 
@@ -90,11 +90,12 @@ compass-ops provides a **ready-to-use foundation** built around a modern, secure
 
    - [ ] Proxy local development database access
 
-- [ ] **Ory Kratos / Oathkeeper** — identity, authentication, and policy-based access control
+- identity, authentication, and policy-based access control
+  - [ ] **Ory Kratos**  
+  - [ ] **Oathkeeper**
+  - [ ] **Ory Hydra**
 
 - [ ] Simple container deployment
-
-- [ ] **Ory Hydra**
 
 - [ ] **Prometheus / Grafana / Loki** — observability stack for metrics, logs, and tracing  
 
