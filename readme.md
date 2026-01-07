@@ -72,6 +72,8 @@ compass-ops provides a **ready-to-use foundation** built around a modern, secure
 
   - [ ] Dev tools
     - [x] MailHog: email capture/testing tool for development 
+    - [ ] PGAdmin for reviewing the Postgres DB in the cluster
+    - [ ] DB Proxy for local development
   
   - [ ] Examples of container integration 
 
@@ -88,7 +90,6 @@ compass-ops provides a **ready-to-use foundation** built around a modern, secure
    
 - [x] **CloudNativePG** — high-availability PostgreSQL for structured data and state
 
-   - [ ] Proxy local development database access
 
 - identity, authentication, and policy-based access control
   - [ ] **Ory Kratos**  
