@@ -83,7 +83,7 @@ compass-ops provides a **ready-to-use foundation** built around a modern, secure
 
 - [x] **Cert-Manager** — automated TLS for both ingress and internal service-to-service communication
    - [x] Route53 (AWS)
-   - [ ] Cloudflare
+   - [x] Cloudflare
    - [ ] Cloud DNS (Google)
    
 - [x] **CloudNativePG** — high-availability PostgreSQL for structured data and state
