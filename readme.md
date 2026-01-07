@@ -89,7 +89,8 @@ compass-ops provides a **ready-to-use foundation** built around a modern, secure
    - [ ] Cloud DNS (Google)
    
 - [x] **CloudNativePG** — high-availability PostgreSQL for structured data and state
-
+  - [ ] backup (etc)
+  - [ ] recovery
 
 - identity, authentication, and policy-based access control
   - [ ] **Ory Kratos**  
