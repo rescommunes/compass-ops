@@ -15,6 +15,10 @@ env:
   dns:
     secretName: dns-credentials
 
+  postgres:
+    superuser:
+        name: postgres
+
     ## choose a dns provider and uncomment the relevant section by removing the leading '#'
     ##  and filling in the required values
 

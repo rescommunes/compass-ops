@@ -1,0 +1,31 @@
+env:
+  email: {{ .Values.env.email }}
+  password: {{ .Values.env.secrets.pgadmin.password }}
+service:
+  type: ClusterIP
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+  hosts:
+    - host: pgadmin.{{ .Values.env.domain }}
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+    - hosts:
+        - pgadmin.{{ .Values.env.domain }}
+      secretName: {{ .Values.env.certificate.tlsWildCardSecretName | quote }}
+
+serverDefinitions:
+  enabled: true
+  servers:
+    postgres-cluster:
+      Name: "PostgreSQL"
+      Group: "Databases"
+      Host: "postgres-cluster-rw.database.svc.cluster.local"
+      Port: 5432
+      MaintenanceDB: "postgres"
+      Username: {{ .Values.env.postgres.superuser.name | quote }}
+      SSLMode: require
