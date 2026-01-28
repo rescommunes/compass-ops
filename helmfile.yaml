@@ -32,6 +32,9 @@ repositories:
     url: https://prometheus-community.github.io/helm-charts
   - name: cnpg-grafana
     url: https://cloudnative-pg.github.io/grafana-dashboards
+  # https://artifacthub.io/packages/helm/runix/pgadmin4
+  - name: runix
+    url: https://helm.runix.net
 
 
 ---
@@ -176,3 +179,12 @@ releases:
     values:
       - ./env/{{ .Environment.Name }}/values.yaml
       - ./env/{{ .Environment.Name }}/proxy.values.yaml
+
+
+  - name: pgadmin
+    namespace: database
+    chart: runix/pgadmin4
+    needs:
+      - database/postgres-cluster
+    values:
+      - ./values/pgadmin.yaml.gotmpl
