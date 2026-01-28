@@ -23,7 +23,13 @@ kratos:
                 - CHANGE_ME_TO_REAL_SECRET
             cipher:
                 - 32-LONG-SECRET-NOT-SECURE-AT-ALL
-
+        tracing:
+          provider: otel
+          providers:
+            otlp:
+              insecure: true
+              # go through otelcol for k8s metadata on traces
+              server_url: otel-collector-opentelemetry-collector.monitoring.svc.cluster.local:4318
         log:
             format: json
     {{- if eq .Environment.Name "dev" }}
@@ -132,6 +138,21 @@ kratos:
                 from_address: "no-reply@{{ .Values.env.domain }}"
                 connection_uri: {{ .Values.env.smtpConnectionUri | quote }}
 
+            channels:
+                - id: sms
+                  type: http
+                  request_config:
+                      url: https://api.twilio.com/2010-04-01/Accounts/{{ .Values.env.twillo.account }}/Messages.json
+                      method: POST
+                      body: base64://ZnVuY3Rpb24oY3R4KSB7CiAgVG86IGN0eC5yZWNpcGllbnQsCiAgQm9keTogY3R4LmJvZHksCn0=
+                      headers:
+                          Content-Type: "application/x-www-form-urlencoded"
+                      auth:
+                          type: basic_auth
+                          config:
+                              user: {{ .Values.env.twillo.account }}
+                              password: {{ .Values.env.secrets.twillo.authToken }}
+
 
 
         serve:
@@ -206,15 +227,15 @@ ingress:
               paths:
                   - path: /
                     pathType: ImplementationSpecific
-{{/*    admin:*/}}
-{{/*        enabled: {{ eq .Environment.Name "dev" }}*/}}
-{{/*        className: traefik*/}}
-{{/*        annotations:*/}}
-{{/*            traefik.ingress.kubernetes.io/router.entrypoints: web,websecure*/}}
-{{/*            traefik.ingress.kubernetes.io/router.middlewares: networking-redirect-https@kubernetescrd*/}}
-{{/*        hosts:*/}}
-{{/*            - host: kratos.admin.{{ .Values.env.domain }}*/}}
-{{/*              paths:*/}}
-{{/*                  - path: /*/}}
-{{/*                    pathType: ImplementationSpecific*/}}
+    admin:
+        enabled: {{ eq .Environment.Name "dev" }}
+        className: traefik
+        annotations:
+            traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+            traefik.ingress.kubernetes.io/router.middlewares: networking-redirect-https@kubernetescrd
+        hosts:
+            - host: kratos.admin.{{ .Values.env.domain }}
+              paths:
+                  - path: /
+                    pathType: ImplementationSpecific
 

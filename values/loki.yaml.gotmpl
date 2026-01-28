@@ -1,0 +1,33 @@
+loki:
+    auth_enabled: false
+    commonConfig:
+        # cannot be bigger than replica count
+        replication_factor: 1
+    storage:
+        type: filesystem
+    useTestSchema: true
+
+deploymentMode: SingleBinary
+
+singleBinary:
+    replicas: 1
+
+backend:
+    replicas: 0
+
+read:
+    replicas: 0
+
+write:
+    replicas: 0
+
+test:
+  enabled: false
+
+# Enable minio for storage
+minio:
+    enabled: true
+
+gateway:
+    service:
+        type: LoadBalancer

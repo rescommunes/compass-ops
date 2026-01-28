@@ -1,34 +1,102 @@
 # Enable Grafana inside the stack
 grafana:
-  enabled: true
-  adminUser: admin
-  adminPassword: {{ .Values.env.secrets.grafana.password }}
-  service:
-    type: ClusterIP
-  ingress:
     enabled: true
-    ingressClassName: traefik
-    annotations:
-      traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
-      traefik.ingress.kubernetes.io/router.middlewares: networking-redirect-https@kubernetescrd
-    hosts:
-      - grafana.{{ .Values.env.domain }}
-    paths:
-      - /
+    adminUser: admin
+    adminPassword: {{ .Values.env.secrets.grafana.password }}
+    service:
+        type: ClusterIP
+    ingress:
+        enabled: true
+        ingressClassName: traefik
+        annotations:
+            traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+            traefik.ingress.kubernetes.io/router.middlewares: networking-redirect-https@kubernetescrd
+        hosts:
+            - grafana.{{ .Values.env.domain }}
+        paths:
+            - /
+    additionalDataSources:
+        - access: proxy
+          jsonData:
+              nodeGraph:
+                  enabled: true
+              serviceMap:
+                  datasourceUid: demo_prometheus
+              tracesToLogsV2:
+                  customQuery: true
+                  datasourceUid: demo_loki
+                  filterByTraceID: true
+                  query: "{$${__tags}} |= \"$${__span.traceId}\""
+                  spanEndTimeShift: 10m
+                  spanStartTimeShift: "-10m"
+                  tags:
+                      - key: k8s.pod.name
+                        value: k8s_pod_name
+          name: Tempo
+          type: tempo
+          uid: demo_tempo
+          url: http://tempo.monitoring.svc.cluster.local:3100
+        - access: proxy
+          jsonData:
+              derivedFields:
+                  - datasourceUid: demo_tempo
+                    matcherRegex: '(?:"trace[_-]?id"\s*:\s*"([^"]+)"|trace[_-]?id=([A-Fa-f0-9]+))'
+                    name: Trace
+                    url: $${__value.raw}
+                    urlDisplayLabel: Tempo - get trace
+          name: Loki
+          type: loki
+          uid: demo_loki
+          url: http://loki-gateway.monitoring.svc.cluster.local
+        - access: proxy
+          jsonData:
+              timeInterval: 30s
+          name: Prometheus
+          type: prometheus
+          uid: demo_prometheus
+          url: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
+    grafana.ini:
+        auth.anonymous:
+            enabled: true
+            org_role: Admin
+    sidecar:
+        datasources:
+            # we already created Prometheus datasource with static UID
+            defaultDatasourceEnabled: false
+    testFramework:
+        enabled: false
 
 prometheus:
-  prometheusSpec:
-    podMonitorSelectorNilUsesHelmValues: false
-    ruleSelectorNilUsesHelmValues: false
-  service:
-    type: ClusterIP
-  ingress:
-    enabled: true
-    ingressClassName: traefik
-    annotations:
-      traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
-      traefik.ingress.kubernetes.io/router.middlewares: networking-redirect-https@kubernetescrd
-    hosts:
-      - prometheus.{{ .Values.env.domain }}
-    paths:
-      - /
+    prometheusSpec:
+        serviceMonitorSelectorNilUsesHelmValues: false
+        serviceMonitorSelector: { }
+        serviceMonitorNamespaceSelector: { }
+        podMonitorSelectorNilUsesHelmValues: false
+        ruleSelectorNilUsesHelmValues: false
+    service:
+        type: ClusterIP
+    ingress:
+        enabled: true
+        ingressClassName: traefik
+        annotations:
+            traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+            traefik.ingress.kubernetes.io/router.middlewares: networking-redirect-https@kubernetescrd
+        hosts:
+            - prometheus.{{ .Values.env.domain }}
+        paths:
+            - /
+
+    additionalServiceMonitors:
+        - name: kube-prometheus-stack-kratos
+          namespace: monitoring
+          selector:
+              matchLabels:
+                  app.kubernetes.io/instance: kratos
+                  app.kubernetes.io/name: kratos
+          namespaceSelector:
+              matchNames:
+                  - ory
+          endpoints:
+              - port: http
+                path: /metrics/prometheus
+                interval: 30s

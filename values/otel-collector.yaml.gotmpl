@@ -1,0 +1,78 @@
+config:
+
+    receivers:
+        filelog:
+            include:
+                - /var/log/pods/*/*/0.log
+            include_file_path: true
+            start_at: end
+            operators:
+                # 1) Parse CRI formatted lines: "<ts> <stream> <flag> <message>"
+                - type: regex_parser
+                  regex: '^(?P<time>[^ ]+) (?P<stream>stdout|stderr) (?P<flag>[^ ]*) (?P<message>.*)$'
+                  timestamp:
+                      parse_from: attributes.time
+                      layout_type: gotime
+                      layout: '2006-01-02T15:04:05.999999999Z07:00'
+                # 2) Move parsed body into the log body field
+                - type: move
+                  from: attributes.message
+                  to: body
+
+        # receive traces over OpenTelemetry HTTP Protocol
+        otlp:
+            protocols:
+                http:
+                    endpoint: 0.0.0.0:4318
+    exporters:
+        otlphttp/logs:
+            endpoint: http://loki-gateway.monitoring.svc.cluster.local:80/otlp
+            tls:
+                insecure: true
+        otlphttp/traces:
+            endpoint: http://tempo.monitoring.svc.cluster.local:4318
+            tls:
+                insecure: true
+    processors:
+        # enrich traces with Kubernetes metadata
+        k8sattributes:
+            extract:
+                metadata:
+                    - k8s.pod.name
+
+    service:
+        pipelines:
+            logs:
+                exporters:
+                    - otlphttp/logs
+                receivers:
+                    - filelog
+            traces:
+                exporters:
+                    - otlphttp/traces
+                processors:
+                    - k8sattributes
+                receivers:
+                    - otlp
+extraVolumeMounts:
+    # volumeMount to consume node logs
+    - mountPath: /var/log/pods
+      name: varlogpods
+      readOnly: true
+extraVolumes:
+    # volume to consume node logs
+    - hostPath:
+          path: /var/log/pods
+      name: varlogpods
+# chart requires this value to be set explicitly
+# image:
+#  repository: otel/opentelemetry-collector-k8s
+# required to collect pod logs from all nodes
+mode: daemonset
+presets:
+    # grant ServiceAccount permissions needed to enrich traces with Kubernetes metadata
+    kubernetesAttributes:
+        enabled: true
+service:
+    # create service that traces can be sent to; disabled by default in daemonset mode
+    enabled: true
