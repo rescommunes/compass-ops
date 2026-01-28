@@ -183,7 +183,6 @@ releases:
   - name: pgadmin
     namespace: database
     chart: runix/pgadmin4
-    version: 1.57.0
     needs:
       - database/postgres-cluster
     values:
