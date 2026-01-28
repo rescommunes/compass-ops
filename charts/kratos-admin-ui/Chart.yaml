@@ -1,0 +1,7 @@
+apiVersion: v2
+name: kratos-admin-ui
+description: A Helm chart for kratos-admin-ui
+type: application
+version: 0.1.0
+appVersion: "latest"
+

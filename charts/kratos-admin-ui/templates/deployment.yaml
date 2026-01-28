@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kratos-admin-ui
+  namespace: ory
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kratos-admin-ui
+  template:
+    metadata:
+      labels:
+        app: kratos-admin-ui
+    spec:
+      containers:
+        - name: kratos-admin-ui
+          image: dhiagharsallaoui/kratos-admin-ui:54ae4f120dfa7c8dfa53147cbfcfb4bb7b0e20f5
+          env:
+            - name: KRATOS_PUBLIC_URL
+              value: "http://kratos-public.ory.svc.cluster.local:80"
+            - name: KRATOS_ADMIN_URL
+              value: "http://kratos-admin.ory.svc.cluster.local:80"
+          ports:
+            - name: http
+              containerPort: 3000
+

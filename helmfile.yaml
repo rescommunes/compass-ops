@@ -167,6 +167,13 @@ releases:
       - ./env/{{ .Environment.Name }}/values.yaml
       - ./values/kratos.yaml.gotmpl
 
+  - name: kratos-admin-ui
+    namespace: ory
+    chart: ./charts/kratos-admin-ui
+    needs:
+      - networking/traefik-routes
+    values:
+      - ./charts/mailhog/values.yaml.gotmpl
 
   - name: application
     namespace: application
