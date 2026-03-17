@@ -93,9 +93,14 @@ compass-ops provides a **ready-to-use foundation** built around a modern, secure
   - [ ] recovery
 
 - identity, authentication, and policy-based access control
-  - [ ] **Ory Kratos**  
+  - [x] **Ory Kratos**  
   - [ ] **Oathkeeper**
   - [ ] **Ory Hydra**
+
+- [x] **Dashboard Authentication**
+  - [x] Traefik Dashboard: BasicAuth (production-ready)
+  - [ ] Grafana/Prometheus: BasicAuth (TODO)
+  - [ ] Future: Migrate to Ory Kratos ForwardAuth for unified SSO
 
 - [ ] Simple container deployment
 
@@ -112,8 +117,21 @@ compass-ops provides a **ready-to-use foundation** built around a modern, secure
 - **Developer velocity:** spin up isolated environments locally or in the cloud with minimal setup.  
 - **Extensible foundation:** intended as a clean foundation for new REST APIs or experimental services.
 
-This project isn’t meant to be revolutionary — just **useful**.  
+This project isn't meant to be revolutionary — just **useful**.  
 If you want to start developing with solid foundations and good security defaults, compass-ops is here to save time and headaches.
+
+### 🔐 Securing Admin Dashboards
+
+All admin-facing dashboards (Traefik, Grafana, Prometheus) should be protected with authentication.
+
+**Current Implementation:**
+- Traefik Dashboard: BasicAuth middleware (see `env/dev/secrets.sops.yaml`)
+- Grafana/Prometheus: To be implemented
+
+**Future Enhancement:**
+- Migrate to Ory Kratos ForwardAuth for unified SSO across all dashboards
+- Leverages existing identity infrastructure
+- Provides better UX with login pages vs browser auth dialogs
 
 ## 🚀 Development Setup
 

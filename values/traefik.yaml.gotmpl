@@ -33,7 +33,7 @@ service:
 
 additionalArguments:
   - "--api.dashboard=true"
-  - "--api.insecure=true"
+  - "--api.insecure=false"
 
 ingressRoute:
   dashboard:
@@ -42,3 +42,6 @@ ingressRoute:
     entryPoints:
       - web
       - websecure
+    middlewares:
+      - name: dashboard-basicauth
+        namespace: networking
