@@ -171,6 +171,14 @@ releases:
     chart: cnpg-grafana/cluster
     version: "0.0.5"
 
+  - name: grafana-dashboards
+    namespace: monitoring
+    chart: ./charts/grafana-dashboards
+    needs:
+      - monitoring/kube-prometheus-stack
+    values:
+      - ./values/grafana-dashboards.yaml.gotmpl
+
   - name: cnpg-operator
     namespace: database
     chart: cnpg/cloudnative-pg

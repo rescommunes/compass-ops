@@ -1,0 +1,4 @@
+dashboards:
+  logging:
+    enabled: true
+    namespace: monitoring
