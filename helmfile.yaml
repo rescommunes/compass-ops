@@ -8,11 +8,13 @@ environments:
     values:
       - ./env/dev/values.yaml
       - ./env/dev/proxy.values.yaml
+      - ./env/dev/resources.yaml
     secrets:
       - ./env/dev/secrets.sops.yaml
   prod:
     values:
       - ./env/prod/values.yaml
+      - ./env/prod/resources.yaml
     secrets:
       - ./env/prod/secrets.sops.yaml
 

@@ -3,12 +3,12 @@ loki:
     commonConfig:
         replication_factor: 1
     storage:
-        type: filesystem
+        type: s3
     schemaConfig:
         configs:
             - from: "2024-04-01"
               store: tsdb
-              object_store: filesystem
+              object_store: s3
               schema: v13
               index:
                   prefix: index_
@@ -29,14 +29,9 @@ singleBinary:
         readOnlyRootFilesystem: false
         capabilities:
             drop: []
-    resources:
-        requests:
-            cpu: 500m
-            memory: 512Mi
-        limits:
-            cpu: 2000m
-            memory: 2Gi
     {{- end }}
+    resources:
+        {{- toYaml .Values.env.resources.loki | nindent 8 }}
 
 backend:
     replicas: 0

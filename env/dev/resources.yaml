@@ -1,0 +1,12 @@
+# Resource limits for dev environment (minikube)
+# All service resources centralized in one file per environment
+
+env:
+  resources:
+    loki:
+      requests:
+        cpu: "1"
+        memory: "2Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
