@@ -13,6 +13,10 @@ loki:
               index:
                   prefix: index_
                   period: 24h
+    limits_config:
+        ingestion_rate_mb: {{ if .Values.env.observability.localStorage }}64{{ else }}128{{ end }}
+        ingestion_burst_size_mb: {{ if .Values.env.observability.localStorage }}128{{ else }}256{{ end }}
+        retention_period: {{ .Values.env.observability.logRetentionHours }}h
 
 deploymentMode: SingleBinary
 

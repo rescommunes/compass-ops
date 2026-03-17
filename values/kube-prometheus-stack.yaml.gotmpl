@@ -38,6 +38,7 @@ grafana:
           url: http://tempo.monitoring.svc.cluster.local:3100
         - access: proxy
           jsonData:
+              httpMethod: POST
               derivedFields:
                   - datasourceUid: demo_tempo
                     matcherRegex: '(?:"trace[_-]?id"\s*:\s*"([^"]+)"|trace[_-]?id=([A-Fa-f0-9]+))'
