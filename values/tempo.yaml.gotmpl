@@ -1,0 +1,64 @@
+# Tempo basic single-binary deployment
+
+deploymentMode: SingleBinary
+
+singleBinary:
+  replicas: 1
+  {{- if .Values.env.observability.localStorage }}
+  persistence:
+    size: 2Gi
+  {{- end }}
+
+# Disable distributed components - not needed for single-binary
+distributor:
+  replicas: 0
+ingester:
+  replicas: 0
+querier:
+  replicas: 0
+queryFrontend:
+  replicas: 0
+compactor:
+  replicas: 0
+
+# Storage config - match Loki's pattern
+storage:
+  trace:
+    backend: local
+    wal:
+      path: /var/tempo/wal
+    local:
+      path: /var/tempo/blocks
+
+# OTLP receiver to accept traces from OTel collector
+tempo:
+  config:
+    server:
+      http_listen_port: 3100
+    distributor:
+      receivers:
+        otlp:
+          protocols:
+            http:
+              endpoint: 0.0.0.0:4318
+    ingester:
+      max_block_duration: 5m
+
+# Service configuration
+service:
+  enabled: true
+  type: ClusterIP
+  port: 3100
+
+# Ingress for direct access (only in dev)
+ingress:
+  enabled: {{ .Values.env.observability.localStorage }}
+  ingressClassName: traefik
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.middlewares: networking-redirect-https@kubernetescrd
+  hosts:
+    - tempo.{{ .Values.env.domain }}
+  paths:
+    - path: /
+      pathType: Prefix

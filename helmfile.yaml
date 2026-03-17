@@ -148,6 +148,14 @@ releases:
     values:
       - ./values/loki.yaml.gotmpl
 
+  - name: promtail
+    namespace: monitoring
+    chart: grafana/promtail
+    version: "~6.15.0"
+    needs:
+      - monitoring/loki
+    values:
+      - ./values/promtail.yaml.gotmpl
 
   - name: otel-collector
     namespace: monitoring
