@@ -49,3 +49,6 @@ config:
                 - source_labels: [__meta_kubernetes_pod_name]
                   action: replace
                   target_label: pod
+
+resources:
+    {{- toYaml .Values.env.resources.promtail | nindent 4 }}

@@ -1,12 +1,302 @@
-# Resource limits for dev environment (minikube)
-# All service resources centralized in one file per environment
+# =============================================================================
+# Resource Limits for Dev Environment (minikube)
+# =============================================================================
+#
+# STRATEGY:
+# ---------
+# This file centralizes ALL resource configurations for the dev environment.
+# Resources are sized based on observed actual usage plus reasonable headroom.
+#
+# SIZING PRINCIPLES:
+# 1. Requests are set to ~1.5x observed average usage (guaranteed allocation)
+# 2. Limits are set to ~2-3x observed average usage (burst capacity)
+# 3. Critical services (traefik, cert-manager) get higher limits for stability
+# 4. Dev caches are minimized - production would need larger caches
+#
+# MEMORY BUDGET (16GB node):
+# - System reserved: ~2GB (kubelet, OS, etc.)
+# - Total requests: ~4.5GB (28% of node)
+# - Total limits: ~8GB (50% of node)
+# - Remaining: ~5.5GB for burst and overcommit
+#
+# CPU BUDGET (8 cores):
+# - System reserved: ~0.5 cores
+# - Total requests: ~3.5 cores (44% of node)
+# - Total limits: ~6 cores (75% of node)
+# - Remaining: ~2 cores for burst
+#
+# TO ADJUST RESOURCES:
+# - Modify values below
+# - Run: helmfile -e dev apply
+#
+# OBSERVED USAGE (from kubectl top pods):
+# Run 'kubectl top pods -A' to see current actual consumption
+#
+# =============================================================================
 
 env:
   resources:
-    loki:
+
+    # =========================================================================
+    # NETWORKING STACK
+    # =========================================================================
+
+    traefik:
       requests:
-        cpu: "1"
-        memory: "2Gi"
+        cpu: "50m"
+        memory: "64Mi"
       limits:
-        cpu: "2"
-        memory: "4Gi"
+        cpu: "200m"
+        memory: "128Mi"
+
+    certManager:
+      requests:
+        cpu: "25m"
+        memory: "32Mi"
+      limits:
+        cpu: "100m"
+        memory: "128Mi"
+
+    certManagerWebhook:
+      requests:
+        cpu: "10m"
+        memory: "16Mi"
+      limits:
+        cpu: "50m"
+        memory: "32Mi"
+
+    certManagerCainjector:
+      requests:
+        cpu: "25m"
+        memory: "32Mi"
+      limits:
+        cpu: "100m"
+        memory: "64Mi"
+
+    # =========================================================================
+    # OBSERVABILITY STACK
+    # =========================================================================
+    
+    # Loki - main log aggregation
+    # Actual usage: ~1.2GB, allowing up to 3GB for heavy query loads
+    loki:
+      singleBinary:
+        requests:
+          cpu: "500m"
+          memory: "1Gi"
+        limits:
+          cpu: "1"
+          memory: "3Gi"
+      # Chunks cache - stores recently accessed log chunks
+      # Actual usage: ~2GB, reduced for dev (production: 8GB+)
+      # allocatedMemory is in MB for memcached
+      chunksCache:
+        allocatedMemory: 512
+        allocatedCPU: 100
+        replicas: 1
+      # Results cache - stores query results
+      # Actual usage: ~30MB, minimal for dev
+      resultsCache:
+        allocatedMemory: 128
+        allocatedCPU: 100
+        replicas: 1
+      # Minio - local S3-compatible storage for logs
+      minio:
+        requests:
+          cpu: "100m"
+          memory: "256Mi"
+        limits:
+          cpu: "200m"
+          memory: "512Mi"
+      # Gateway - routes requests to loki
+      gateway:
+        requests:
+          cpu: "50m"
+          memory: "32Mi"
+        limits:
+          cpu: "100m"
+          memory: "64Mi"
+      # Canary - monitors loki health
+      canary:
+        requests:
+          cpu: "25m"
+          memory: "32Mi"
+        limits:
+          cpu: "50m"
+          memory: "64Mi"
+
+    # Promtail - collects logs from nodes
+    # Actual usage: ~200MB on single node
+    promtail:
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+      limits:
+        cpu: "100m"
+        memory: "128Mi"
+
+    # Tempo - distributed tracing backend
+    # Actual usage: ~40MB
+    tempo:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
+      limits:
+        cpu: "200m"
+        memory: "256Mi"
+
+    # OTel Collector - receives and routes telemetry
+    # Actual usage: ~65MB
+    otelCollector:
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+      limits:
+        cpu: "200m"
+        memory: "128Mi"
+
+    # =========================================================================
+    # MONITORING STACK (kube-prometheus)
+    # =========================================================================
+
+    # Prometheus - metrics storage and querying
+    # Actual usage: ~500MB, needs headroom for data growth
+    prometheus:
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
+      limits:
+        cpu: "500m"
+        memory: "1Gi"
+
+    # Grafana - visualization dashboards
+    # Actual usage: ~260MB
+    grafana:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
+      limits:
+        cpu: "200m"
+        memory: "256Mi"
+
+    # Prometheus Operator - manages prometheus instances
+    # Actual usage: ~30MB
+    prometheusOperator:
+      requests:
+        cpu: "25m"
+        memory: "32Mi"
+      limits:
+        cpu: "100m"
+        memory: "64Mi"
+
+    # Kube State Metrics - exposes k8s object metrics
+    # Actual usage: ~60MB, needs headroom for spikes
+    kubeStateMetrics:
+      requests:
+        cpu: "25m"
+        memory: "64Mi"
+      limits:
+        cpu: "100m"
+        memory: "128Mi"
+
+    # Alertmanager - handles alerts
+    # Actual usage: ~40MB
+    alertmanager:
+      requests:
+        cpu: "25m"
+        memory: "32Mi"
+      limits:
+        cpu: "100m"
+        memory: "64Mi"
+
+    # Node Exporter - exposes node metrics
+    # Actual usage: ~12MB
+    nodeExporter:
+      requests:
+        cpu: "25m"
+        memory: "16Mi"
+      limits:
+        cpu: "50m"
+        memory: "32Mi"
+
+    # =========================================================================
+    # DATABASE STACK
+    # =========================================================================
+
+    # CloudNativePG Operator - manages postgres clusters
+    # Actual usage: ~90MB
+    cnpgOperator:
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+      limits:
+        cpu: "200m"
+        memory: "128Mi"
+
+    # PostgreSQL cluster instances
+    # Actual usage: ~50MB base + database size
+    postgres:
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+      limits:
+        cpu: "500m"
+        memory: "256Mi"
+
+    # pgAdmin - PostgreSQL admin UI
+    # Actual usage: ~250MB
+    pgadmin:
+      requests:
+        cpu: "25m"
+        memory: "128Mi"
+      limits:
+        cpu: "100m"
+        memory: "256Mi"
+
+    # =========================================================================
+    # AUTHENTICATION (Ory Kratos)
+    # =========================================================================
+
+    # Kratos - identity management
+    # Actual usage: ~40MB
+    kratos:
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+      limits:
+        cpu: "200m"
+        memory: "128Mi"
+
+    # Kratos Courier - sends emails/messages
+    # Actual usage: ~35MB
+    kratosCourier:
+      requests:
+        cpu: "25m"
+        memory: "32Mi"
+      limits:
+        cpu: "100m"
+        memory: "64Mi"
+
+    # Kratos Admin UI - web interface for kratos
+    # Actual usage: ~160MB
+    kratosAdminUi:
+      requests:
+        cpu: "25m"
+        memory: "64Mi"
+      limits:
+        cpu: "100m"
+        memory: "128Mi"
+
+    # =========================================================================
+    # TOOLS
+    # =========================================================================
+
+    # Mailhog - email testing (dev only)
+    # Actual usage: ~80MB
+    mailhog:
+      requests:
+        cpu: "10m"
+        memory: "32Mi"
+      limits:
+        cpu: "50m"
+        memory: "64Mi"

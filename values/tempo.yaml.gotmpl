@@ -8,6 +8,8 @@ singleBinary:
   persistence:
     size: 2Gi
   {{- end }}
+  resources:
+    {{- toYaml .Values.env.resources.tempo | nindent 4 }}
 
 # Disable distributed components - not needed for single-binary
 distributor:

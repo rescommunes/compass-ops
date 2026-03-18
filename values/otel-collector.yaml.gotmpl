@@ -76,3 +76,5 @@ presets:
 service:
     # create service that traces can be sent to; disabled by default in daemonset mode
     enabled: true
+resources:
+    {{- toYaml .Values.env.resources.otelCollector | nindent 4 }}

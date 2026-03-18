@@ -4,6 +4,8 @@ cluster:
     size: 1Gi
   monitoring:
     enabled: true
+  resources:
+    {{- toYaml .Values.env.resources.postgres | nindent 4 }}
 
   superuserSecret: postgres-cluster-superuser
 

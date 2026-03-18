@@ -9,12 +9,16 @@ kratos:
         type: initContainer
 
     deployment:
-        extraArgs
-        - --sqa-opt-out
+        extraArgs:
+            - --sqa-opt-out
+        resources:
+            {{- toYaml .Values.env.resources.kratos | nindent 12 }}
 
     statefulSet:
-        extraArgs
-        - --sqa-opt-out
+        extraArgs:
+            - --sqa-opt-out
+        resources:
+            {{- toYaml .Values.env.resources.kratosCourier | nindent 12 }}
 
     config:
         dsn: "postgresql://kratos:{{ $pw }}@postgres-cluster-rw.database.svc.cluster.local:5432/kratos"

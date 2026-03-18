@@ -5,7 +5,8 @@ service:
   type: ClusterIP
 ingress:
   enabled: false
-
+resources:
+  {{- toYaml .Values.env.resources.pgadmin | nindent 2 }}
 serverDefinitions:
   enabled: true
   servers:

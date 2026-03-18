@@ -31,7 +31,7 @@ singleBinary:
             drop: []
     {{- end }}
     resources:
-        {{- toYaml .Values.env.resources.loki | nindent 8 }}
+        {{- toYaml .Values.env.resources.loki.singleBinary | nindent 8 }}
 
 backend:
     replicas: 0
@@ -48,9 +48,33 @@ test:
 gateway:
     service:
         type: ClusterIP
+    resources:
+        {{- toYaml .Values.env.resources.loki.gateway | nindent 8 }}
+    # Disable anti-affinity for single-node clusters
+    affinity: {}
 
 {{- if .Values.env.observability.localStorage }}
 # Enable MinIO for local development storage
 minio:
     enabled: true
+    resources:
+        {{- toYaml .Values.env.resources.loki.minio | nindent 8 }}
 {{- end }}
+
+# Reduce cache sizes for dev environment
+# Cache resources are controlled via allocatedMemory/allocatedCPU (in MB/millicores)
+chunksCache:
+    enabled: true
+    allocatedMemory: {{ .Values.env.resources.loki.chunksCache.allocatedMemory }}
+    allocatedCPU: {{ .Values.env.resources.loki.chunksCache.allocatedCPU }}
+    replicas: {{ .Values.env.resources.loki.chunksCache.replicas }}
+
+resultsCache:
+    enabled: true
+    allocatedMemory: {{ .Values.env.resources.loki.resultsCache.allocatedMemory }}
+    allocatedCPU: {{ .Values.env.resources.loki.resultsCache.allocatedCPU }}
+    replicas: {{ .Values.env.resources.loki.resultsCache.replicas }}
+
+lokiCanary:
+    resources:
+        {{- toYaml .Values.env.resources.loki.canary | nindent 8 }}

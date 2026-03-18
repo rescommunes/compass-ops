@@ -38,3 +38,6 @@ additionalArguments:
 ingressRoute:
   dashboard:
     enabled: false
+
+resources:
+  {{- toYaml .Values.env.resources.traefik | nindent 2 }}

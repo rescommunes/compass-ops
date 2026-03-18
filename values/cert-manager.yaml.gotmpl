@@ -1,0 +1,11 @@
+extraArgs:
+  - --dns01-recursive-nameservers=8.8.8.8:53,1.1.1.1:53
+  - --dns01-recursive-nameservers-only
+resources:
+  {{- toYaml .Values.env.resources.certManager | nindent 2 }}
+webhook:
+  resources:
+    {{- toYaml .Values.env.resources.certManagerWebhook | nindent 4 }}
+cainjector:
+  resources:
+    {{- toYaml .Values.env.resources.certManagerCainjector | nindent 4 }}

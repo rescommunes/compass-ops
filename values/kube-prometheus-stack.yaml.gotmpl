@@ -7,6 +7,8 @@ grafana:
         type: ClusterIP
     ingress:
         enabled: false
+    resources:
+        {{- toYaml .Values.env.resources.grafana | nindent 8 }}
     additionalDataSources:
         - access: proxy
           jsonData:
@@ -66,6 +68,8 @@ prometheus:
         serviceMonitorNamespaceSelector: { }
         podMonitorSelectorNilUsesHelmValues: false
         ruleSelectorNilUsesHelmValues: false
+        resources:
+            {{- toYaml .Values.env.resources.prometheus | nindent 12 }}
     service:
         type: ClusterIP
     ingress:
@@ -85,3 +89,20 @@ prometheus:
               - port: http
                 path: /metrics/prometheus
                 interval: 30s
+
+prometheusOperator:
+    resources:
+        {{- toYaml .Values.env.resources.prometheusOperator | nindent 8 }}
+
+kube-state-metrics:
+    resources:
+        {{- toYaml .Values.env.resources.kubeStateMetrics | nindent 8 }}
+
+prometheus-node-exporter:
+    resources:
+        {{- toYaml .Values.env.resources.nodeExporter | nindent 8 }}
+
+alertmanager:
+    alertmanagerSpec:
+        resources:
+            {{- toYaml .Values.env.resources.alertmanager | nindent 12 }}

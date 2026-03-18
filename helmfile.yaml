@@ -102,10 +102,7 @@ releases:
       - name: crds.enabled
         value: true
     values:
-      # dns to use for the dns-01 challenge isn't resolving, this helps
-      - extraArgs:
-          - --dns01-recursive-nameservers=8.8.8.8:53,1.1.1.1:53
-          - --dns01-recursive-nameservers-only
+      - ./values/cert-manager.yaml.gotmpl
 
 
   - name: certificates
@@ -189,6 +186,8 @@ releases:
     set:
       - name: crds.create
         value: true
+    values:
+      - ./values/cnpg-operator.yaml.gotmpl
 
   - name: postgres
     namespace: database
@@ -219,7 +218,7 @@ releases:
     needs:
       - networking/traefik-routes
     values:
-      - ./env/{{ .Environment.Name }}/values.yaml
+      - ./values/mailhog.yaml.gotmpl
 
   - name: kratos
     namespace: ory
@@ -240,7 +239,7 @@ releases:
     needs:
       - networking/traefik-routes
     values:
-      - ./env/{{ .Environment.Name }}/values.yaml
+      - ./values/kratos-admin-ui.yaml.gotmpl
 
   - name: application
     namespace: application

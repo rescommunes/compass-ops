@@ -21,4 +21,8 @@ spec:
               containerPort: 1025
             - name: http
               containerPort: 8025
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
 
