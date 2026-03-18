@@ -28,8 +28,10 @@ kratos:
           providers:
             otlp:
               insecure: true
-              # go through otelcol for k8s metadata on traces
+              # go through otelcol for k8s metadata on traces (using HTTP port 4318)
               server_url: otel-collector-opentelemetry-collector.monitoring.svc.cluster.local:4318
+              sampling:
+                sampling_ratio: {{ .Values.env.observability.tracingSamplingRatio }}
         log:
             format: json
     {{- if eq .Environment.Name "dev" }}

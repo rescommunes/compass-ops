@@ -92,7 +92,9 @@ compass-ops provides a **ready-to-use foundation** built around a modern, secure
   - [ ] backup (etc)
   - [ ] recovery
 
-- identity, authentication, and policy-based access control
+- [ ] Consider [Percona Operator for MongoDB](https://docs.percona.com/percona-operator-for-mongodb/index.html)
+
+- [ ] identity, authentication, and policy-based access control
   - [x] **Ory Kratos**  
   - [ ] **Oathkeeper**
   - [ ] **Ory Hydra**
