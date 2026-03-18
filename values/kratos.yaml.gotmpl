@@ -219,25 +219,7 @@ serviceMonitor:
 
 ingress:
     public:
-        enabled: true
-        className: traefik
-        annotations:
-            traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
-            traefik.ingress.kubernetes.io/router.middlewares: networking-redirect-https@kubernetescrd
-        hosts:
-            - host: kratos.{{ .Values.env.domain }}
-              paths:
-                  - path: /
-                    pathType: ImplementationSpecific
+        enabled: false
     admin:
-        enabled: {{ eq .Environment.Name "dev" }}
-        className: traefik
-        annotations:
-            traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
-            traefik.ingress.kubernetes.io/router.middlewares: networking-redirect-https@kubernetescrd
-        hosts:
-            - host: kratos.admin.{{ .Values.env.domain }}
-              paths:
-                  - path: /
-                    pathType: ImplementationSpecific
+        enabled: false
 

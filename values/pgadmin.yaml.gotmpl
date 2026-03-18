@@ -4,19 +4,7 @@ env:
 service:
   type: ClusterIP
 ingress:
-  enabled: true
-  annotations:
-    kubernetes.io/ingress.class: traefik
-    traefik.ingress.kubernetes.io/router.entrypoints: websecure
-  hosts:
-    - host: pgadmin.{{ .Values.env.domain }}
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
-  tls:
-    - hosts:
-        - pgadmin.{{ .Values.env.domain }}
-      secretName: {{ .Values.env.certificate.tlsWildCardSecretName | quote }}
+  enabled: false
 
 serverDefinitions:
   enabled: true

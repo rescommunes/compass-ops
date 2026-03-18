@@ -10,7 +10,7 @@ gateway:
       hostname: "*.localhost"
       namespacePolicy:
         from: All
-    http-fqdn:
+    web:
       port: 8000
       protocol: HTTP
       hostname: "*.{{ .Values.env.domain }}"
@@ -37,11 +37,4 @@ additionalArguments:
 
 ingressRoute:
   dashboard:
-    enabled: true
-    matchRule: Host(`traefik.{{.Values.env.domain}}`)
-    entryPoints:
-      - web
-      - websecure
-    middlewares:
-      - name: dashboard-basicauth
-        namespace: networking
+    enabled: false

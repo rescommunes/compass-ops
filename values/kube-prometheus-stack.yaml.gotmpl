@@ -6,15 +6,7 @@ grafana:
     service:
         type: ClusterIP
     ingress:
-        enabled: true
-        ingressClassName: traefik
-        annotations:
-            traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
-            traefik.ingress.kubernetes.io/router.middlewares: networking-redirect-https@kubernetescrd
-        hosts:
-            - grafana.{{ .Values.env.domain }}
-        paths:
-            - /
+        enabled: false
     additionalDataSources:
         - access: proxy
           jsonData:
@@ -77,15 +69,7 @@ prometheus:
     service:
         type: ClusterIP
     ingress:
-        enabled: true
-        ingressClassName: traefik
-        annotations:
-            traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
-            traefik.ingress.kubernetes.io/router.middlewares: networking-redirect-https@kubernetescrd
-        hosts:
-            - prometheus.{{ .Values.env.domain }}
-        paths:
-            - /
+        enabled: false
 
     additionalServiceMonitors:
         - name: kube-prometheus-stack-kratos

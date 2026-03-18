@@ -47,7 +47,7 @@ test:
 
 gateway:
     service:
-        type: LoadBalancer
+        type: ClusterIP
 
 {{- if .Values.env.observability.localStorage }}
 # Enable MinIO for local development storage

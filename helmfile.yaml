@@ -135,6 +135,7 @@ releases:
       - networking/traefik
     values:
       - ./env/{{ .Environment.Name }}/values.yaml
+      - ./env/{{ .Environment.Name }}/proxy.values.yaml
     secrets:
       - ./env/{{ .Environment.Name }}/secrets.sops.yaml
 
@@ -218,7 +219,7 @@ releases:
     needs:
       - networking/traefik-routes
     values:
-      - ./charts/mailhog/values.yaml.gotmpl
+      - ./env/{{ .Environment.Name }}/values.yaml
 
   - name: kratos
     namespace: ory
@@ -239,7 +240,7 @@ releases:
     needs:
       - networking/traefik-routes
     values:
-      - ./charts/mailhog/values.yaml.gotmpl
+      - ./env/{{ .Environment.Name }}/values.yaml
 
   - name: application
     namespace: application
