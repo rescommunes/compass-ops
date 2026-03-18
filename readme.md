@@ -218,7 +218,7 @@ To get started with compass-ops locally, follow these steps:
 > 📝We are using a Minikube profile named compass. If you want to run additional Minikube environments, give them different profile names.
 
 ```bash
-minikube start -p compass --driver=docker --cpus=4 --memory=8192 
+minikube start -p compass --driver=docker --cpus=6 --memory=16384 
 ```
 
 The above command starts a Minikube instance using the `compass` profile and the `Docker` driver. Adjust `--cpus` and `--memory` as needed.
