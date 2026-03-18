@@ -8,33 +8,57 @@ environments:
     values:
       - ./env/dev/values.yaml
       - ./env/dev/proxy.values.yaml
+      - ./env/dev/resources.yaml
     secrets:
       - ./env/dev/secrets.sops.yaml
   prod:
     values:
       - ./env/prod/values.yaml
+      - ./env/prod/resources.yaml
     secrets:
       - ./env/prod/secrets.sops.yaml
 
 repositories:
-  - name: jetstack
-    url: https://charts.jetstack.io
-  - name: traefik
-    url: https://traefik.github.io/charts
-  - name: cnpg
-    url: https://cloudnative-pg.github.io/charts
-  - name: ory
-    url: https://k8s.ory.sh/helm/charts
+  # blank chart to create namespaces and other raw k8s resources
   - name: raw
     url: https://bedag.github.io/helm-charts/
-  # https://github.com/prometheus-operator/kube-prometheus
+
+  # todo: find chart notes
+  - name: jetstack
+    url: https://charts.jetstack.io
+
+  # todo: find chart notes
+  - name: traefik
+    url: https://traefik.github.io/charts
+
+  # todo: find chart notes
+  - name: cnpg
+    url: https://cloudnative-pg.github.io/charts
+
+  # todo: find chart notes
+  - name: ory
+    url: https://k8s.ory.sh/helm/charts
+
+  # https://opentelemetry.io/docs/platforms/kubernetes/helm/
+  - name: open-telemetry
+    url: https://open-telemetry.github.io/opentelemetry-helm-charts
+
+  # ez prometheus & grafana: https://github.com/prometheus-operator/kube-prometheus
   - name: prometheus-community
     url: https://prometheus-community.github.io/helm-charts
+
+  # https://github.com/cloudnative-pg/grafana-dashboards
   - name: cnpg-grafana
     url: https://cloudnative-pg.github.io/grafana-dashboards
   # https://artifacthub.io/packages/helm/runix/pgadmin4
   - name: runix
     url: https://helm.runix.net
+
+  # tempo: https://github.com/grafana/tempo/tree/main/example/helm
+  # loki: https://grafana.com/docs/loki/latest/setup/install/helm/install-scalable/
+  # https://github.com/grafana/loki/tree/main/production/helm/loki
+  - name: grafana
+    url: https://grafana.github.io/helm-charts
 
 
 ---
@@ -53,6 +77,8 @@ releases:
             kind: Namespace
             metadata:
               name: networking
+
+
 
 
   - name: kube-prometheus-stack
@@ -98,7 +124,7 @@ releases:
     chart: traefik/traefik
     version: "~37.4.0"
     needs:
-        - cert-manager/certificates
+      - cert-manager/certificates
     values:
       - ./values/traefik.yaml.gotmpl
 
@@ -109,11 +135,51 @@ releases:
       - networking/traefik
     values:
       - ./env/{{ .Environment.Name }}/values.yaml
+    secrets:
+      - ./env/{{ .Environment.Name }}/secrets.sops.yaml
+
+  - name: tempo
+    namespace: monitoring
+    chart: grafana/tempo
+    version: "1.18.0"
+    values:
+      - ./values/tempo.yaml.gotmpl
+
+  - name: loki
+    namespace: monitoring
+    chart: grafana/loki
+    version: "~6.0.0"
+    values:
+      - ./values/loki.yaml.gotmpl
+
+  - name: promtail
+    namespace: monitoring
+    chart: grafana/promtail
+    version: "~6.15.0"
+    needs:
+      - monitoring/loki
+    values:
+      - ./values/promtail.yaml.gotmpl
+
+  - name: otel-collector
+    namespace: monitoring
+    chart: open-telemetry/opentelemetry-collector
+    version: "~0.77.0"
+    values:
+      - ./values/otel-collector.yaml.gotmpl
 
   - name: cnpg-grafana
     namespace: monitoring
     chart: cnpg-grafana/cluster
     version: "0.0.5"
+
+  - name: grafana-dashboards
+    namespace: monitoring
+    chart: ./charts/grafana-dashboards
+    needs:
+      - monitoring/kube-prometheus-stack
+    values:
+      - ./values/grafana-dashboards.yaml.gotmpl
 
   - name: cnpg-operator
     namespace: database

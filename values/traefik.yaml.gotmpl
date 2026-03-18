@@ -31,9 +31,17 @@ gateway:
 service:
   type: LoadBalancer
 
+additionalArguments:
+  - "--api.dashboard=true"
+  - "--api.insecure=false"
+
 ingressRoute:
   dashboard:
     enabled: true
-    matchRule: Host(`traefik.localhost`)
+    matchRule: Host(`traefik.{{.Values.env.domain}}`)
     entryPoints:
       - web
+      - websecure
+    middlewares:
+      - name: dashboard-basicauth
+        namespace: networking

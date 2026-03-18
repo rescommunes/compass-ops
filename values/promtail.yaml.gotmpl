@@ -1,0 +1,51 @@
+# DaemonSet - runs on every node
+daemonset:
+    enabled: true
+
+# RBAC for k8s API access
+rbac:
+    create: true
+
+serviceAccount:
+    create: true
+
+# Mount /var/log from host (chart handles /var/lib/docker/containers by default)
+extraVolumes:
+    - name: varlog
+      hostPath:
+        path: /var/log
+        type: Directory
+
+extraVolumeMounts:
+    - name: varlog
+      mountPath: /var/log
+      readOnly: true
+
+# Scrape config - use standard k8s path
+config:
+    logFormat: logfmt
+    logLevel: info
+    snippets:
+        scrapeConfigs: |
+            - job_name: kubernetes-pods
+              kubernetes_sd_configs:
+                - role: pod
+              relabel_configs:
+                # Keep only running pods
+                - source_labels: [__meta_kubernetes_pod_phase]
+                  action: keep
+                  regex: Running
+                # Standard k8s path
+                - action: replace
+                  target_label: __path__
+                  replacement: /var/log/containers/*.log
+                # Add labels for Grafana
+                - source_labels: [__meta_kubernetes_pod_label_app]
+                  action: replace
+                  target_label: app
+                - source_labels: [__meta_kubernetes_namespace]
+                  action: replace
+                  target_label: namespace
+                - source_labels: [__meta_kubernetes_pod_name]
+                  action: replace
+                  target_label: pod

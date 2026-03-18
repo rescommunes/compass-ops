@@ -19,6 +19,11 @@ env:
     superuser:
         name: postgres
 
+  observability:
+    localStorage: true
+    logRetentionHours: 24
+    tracingSamplingRatio: 1
+
     ## choose a dns provider and uncomment the relevant section by removing the leading '#'
     ##  and filling in the required values
 

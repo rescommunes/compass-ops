@@ -92,10 +92,17 @@ compass-ops provides a **ready-to-use foundation** built around a modern, secure
   - [ ] backup (etc)
   - [ ] recovery
 
-- identity, authentication, and policy-based access control
-  - [ ] **Ory Kratos**  
+- [ ] Consider [Percona Operator for MongoDB](https://docs.percona.com/percona-operator-for-mongodb/index.html)
+
+- [ ] identity, authentication, and policy-based access control
+  - [x] **Ory Kratos**  
   - [ ] **Oathkeeper**
   - [ ] **Ory Hydra**
+
+- [x] **Dashboard Authentication**
+  - [x] Traefik Dashboard: BasicAuth (production-ready)
+  - [ ] Grafana/Prometheus: BasicAuth (TODO)
+  - [ ] Future: Migrate to Ory Kratos ForwardAuth for unified SSO
 
 - [ ] Simple container deployment
 
@@ -112,8 +119,21 @@ compass-ops provides a **ready-to-use foundation** built around a modern, secure
 - **Developer velocity:** spin up isolated environments locally or in the cloud with minimal setup.  
 - **Extensible foundation:** intended as a clean foundation for new REST APIs or experimental services.
 
-This project isn’t meant to be revolutionary — just **useful**.  
+This project isn't meant to be revolutionary — just **useful**.  
 If you want to start developing with solid foundations and good security defaults, compass-ops is here to save time and headaches.
+
+### 🔐 Securing Admin Dashboards
+
+All admin-facing dashboards (Traefik, Grafana, Prometheus) should be protected with authentication.
+
+**Current Implementation:**
+- Traefik Dashboard: BasicAuth middleware (see `env/dev/secrets.sops.yaml`)
+- Grafana/Prometheus: To be implemented
+
+**Future Enhancement:**
+- Migrate to Ory Kratos ForwardAuth for unified SSO across all dashboards
+- Leverages existing identity infrastructure
+- Provides better UX with login pages vs browser auth dialogs
 
 ## 🚀 Development Setup
 
@@ -198,7 +218,7 @@ To get started with compass-ops locally, follow these steps:
 > 📝We are using a Minikube profile named compass. If you want to run additional Minikube environments, give them different profile names.
 
 ```bash
-minikube start -p compass --driver=docker --cpus=4 --memory=8192 --mount=true --mount-string="$HOME/dev-storage:/cnpg"
+minikube start -p compass --driver=docker --cpus=4 --memory=8192 
 ```
 
 The above command starts a Minikube instance using the `compass` profile and the `Docker` driver. Adjust `--cpus` and `--memory` as needed.
