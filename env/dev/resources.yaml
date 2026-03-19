@@ -145,6 +145,28 @@ env:
         cpu: "200m"
         memory: "256Mi"
 
+    # Redis - in-memory cache for service caching
+    # Redis pod
+    redis:
+      pod:
+        requests:
+          cpu: "50m"
+          memory: "64Mi"
+        limits:
+          cpu: "200m"
+          memory: "256Mi"
+      # Redis exporter sidecar for metrics
+      exporter:
+        requests:
+          cpu: "10m"
+          memory: "16Mi"
+        limits:
+          cpu: "50m"
+          memory: "32Mi"
+      # Max memory for Redis (maxmemory config)
+      # Set to ~80% of memory limit
+      maxmemory: "200mb"
+
     # OTel Collector - receives and routes telemetry
     # Actual usage: ~65MB
     otelCollector:

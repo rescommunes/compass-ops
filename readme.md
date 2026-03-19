@@ -94,6 +94,8 @@ compass-ops provides a **ready-to-use foundation** built around a modern, secure
 
 - [ ] Consider [Percona Operator for MongoDB](https://docs.percona.com/percona-operator-for-mongodb/index.html)
 
+- [ ] **Redis** — in-memory cache for service caching
+
 - [ ] identity, authentication, and policy-based access control
   - [x] **Ory Kratos**  
   - [ ] **Oathkeeper**

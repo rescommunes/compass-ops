@@ -1,0 +1,61 @@
+architecture: standalone
+
+replicaCount: 1
+
+auth:
+  enabled: true
+  existingSecret: redis-secrets
+  existingSecretPasswordKey: redis-password
+
+{{- if .Values.env.observability.localStorage }}
+persistence:
+  enabled: true
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 2Gi
+{{- else }}
+persistence:
+  enabled: false
+{{- end }}
+
+config:
+  content: |
+    bind * -::*
+    protected-mode no
+    appendonly yes
+    save ""
+
+extraConfig: |
+  maxmemory {{ .Values.env.resources.redis.maxmemory }}
+  maxmemory-policy allkeys-lru
+
+resources:
+  {{- toYaml .Values.env.resources.redis.pod | nindent 2 }}
+
+service:
+  type: ClusterIP
+  port: 6379
+
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    namespace: monitoring
+    interval: 30s
+    labels:
+      release: kube-prometheus-stack
+  resources:
+    {{- toYaml .Values.env.resources.redis.exporter | nindent 4 }}
+
+podSecurityContext:
+  fsGroup: 999
+
+containerSecurityContext:
+  runAsUser: 999
+  runAsGroup: 999
+  runAsNonRoot: true
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
