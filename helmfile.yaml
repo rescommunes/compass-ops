@@ -111,6 +111,8 @@ releases:
       app: monitoring
     chart: prometheus-community/kube-prometheus-stack
     version: "~65.0.0"
+    needs:
+      - kube-system/create-namespaces
     secrets:
       - ./env/{{ .Environment.Name }}/secrets.sops.yaml
     values:
@@ -121,6 +123,8 @@ releases:
     namespace: cert-manager
     chart: jetstack/cert-manager
     version: "~1.19.0"
+    needs:
+      - kube-system/create-namespaces
     set:
       - name: crds.enabled
         value: true
@@ -163,6 +167,8 @@ releases:
     namespace: monitoring
     chart: grafana/tempo
     version: "1.18.0"
+    needs:
+      - kube-system/create-namespaces
     values:
       - ./values/tempo.yaml.gotmpl
 
@@ -170,6 +176,8 @@ releases:
     namespace: monitoring
     chart: grafana/loki
     version: "~6.0.0"
+    needs:
+      - kube-system/create-namespaces
     values:
       - ./values/loki.yaml.gotmpl
 
@@ -186,6 +194,8 @@ releases:
     namespace: monitoring
     chart: open-telemetry/opentelemetry-collector
     version: "~0.77.0"
+    needs:
+      - kube-system/create-namespaces
     values:
       - ./values/otel-collector.yaml.gotmpl
 
@@ -193,6 +203,8 @@ releases:
     namespace: monitoring
     chart: cnpg-grafana/cluster
     version: "0.0.5"
+    needs:
+      - kube-system/create-namespaces
 
   - name: grafana-dashboards
     namespace: monitoring
@@ -206,6 +218,8 @@ releases:
     namespace: database
     chart: cnpg/cloudnative-pg
     version: "~0.26.1"
+    needs:
+      - kube-system/create-namespaces
     set:
       - name: crds.create
         value: true
