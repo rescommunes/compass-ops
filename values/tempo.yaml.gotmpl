@@ -25,9 +25,6 @@ compactor:
 
 # Tempo configuration
 tempo:
-  # Storage config - match Loki's pattern
-  # Redis cache for Tempo (bloom filters, parquet footers, search results)
-  # Uses database 0 - other databases reserved for other services
   storage:
     trace:
       backend: local
@@ -35,26 +32,62 @@ tempo:
         path: /var/tempo/wal
       local:
         path: /var/tempo/blocks
-      cache:
-        caches:
-          - roles:
-              - bloom
-              - parquet-footer
-              - frontend-search
-            redis:
-              endpoint: {{ .Values.env.secrets.redis.password }}@redis.database.svc.cluster.local:6379
-              db: 0
-              timeout: 2s
-  server:
-    http_listen_port: 3100
-  # Note: the chart uses 'receivers' not 'distributors.receivers'
-  receivers:
-    otlp:
-      protocols:
-        http:
-          endpoint: 0.0.0.0:4318
+
+# Override the config entirely to include Redis cache
+config: |
+  memberlist:
+    cluster_label: "{{ .Release.Name }}.{{ .Release.Namespace }}"
+  multitenancy_enabled: false
+  usage_report:
+    reporting_enabled: true
+  compactor:
+    compaction:
+      block_retention: 24h
+  distributor:
+    receivers:
+      jaeger:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:14250
+          thrift_binary:
+            endpoint: 0.0.0.0:6832
+          thrift_compact:
+            endpoint: 0.0.0.0:6831
+          thrift_http:
+            endpoint: 0.0.0.0:14268
+      opencensus: null
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
   ingester:
     max_block_duration: 5m
+  server:
+    http_listen_port: 3100
+  cache:
+    caches:
+      - roles:
+          - bloom
+          - parquet-footer
+          - frontend-search
+        redis:
+          endpoint: redis.database.svc.cluster.local:6379
+          password: {{ .Values.env.secrets.redis.password }}
+          db: 0
+          timeout: 2s
+  storage:
+    trace:
+      backend: local
+      local:
+        path: /var/tempo/blocks
+      wal:
+        path: /var/tempo/wal
+  querier: {}
+  query_frontend: {}
+  overrides:
+    per_tenant_override_config: /conf/overrides.yaml
 
 # Service configuration
 service:
