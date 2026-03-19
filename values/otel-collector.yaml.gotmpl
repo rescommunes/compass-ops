@@ -42,11 +42,6 @@ config:
 
     service:
         pipelines:
-            logs:
-                exporters:
-                    - otlphttp/logs
-                receivers:
-                    - filelog
             traces:
                 exporters:
                     - otlphttp/traces

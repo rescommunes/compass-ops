@@ -49,6 +49,13 @@ config:
                 - source_labels: [__meta_kubernetes_pod_name]
                   action: replace
                   target_label: pod
+              pipeline_stages:
+                # Drop debug/trace logs for cert-manager and monitoring namespaces
+                - match:
+                    selector: '{namespace=~"cert-manager|monitoring"}'
+                    stages:
+                      - drop:
+                          expression: '(?i)(level|lvl)["\s:=]+(debug|trace)'
 
 resources:
     {{- toYaml .Values.env.resources.promtail | nindent 4 }}
