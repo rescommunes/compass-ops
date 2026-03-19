@@ -1,7 +1,7 @@
 helmDefaults:
   wait: true
   timeout: 600
-  createNamespace: true
+  createNamespace: false
 
 environments:
   dev:
@@ -66,7 +66,7 @@ repositories:
 releases:
 
 
-  #  ensure the namespaces exist, case we add to it then create it later
+  #  ensure all namespaces exist before any releases run
   - name: create-namespaces
     namespace: kube-system
     chart: raw/raw
@@ -77,13 +77,36 @@ releases:
             kind: Namespace
             metadata:
               name: networking
+          - apiVersion: v1
+            kind: Namespace
+            metadata:
+              name: cert-manager
+          - apiVersion: v1
+            kind: Namespace
+            metadata:
+              name: monitoring
+          - apiVersion: v1
+            kind: Namespace
+            metadata:
+              name: database
+          - apiVersion: v1
+            kind: Namespace
+            metadata:
+              name: tools
+          - apiVersion: v1
+            kind: Namespace
+            metadata:
+              name: ory
+          - apiVersion: v1
+            kind: Namespace
+            metadata:
+              name: application
 
 
 
 
   - name: kube-prometheus-stack
     namespace: monitoring
-    createNamespace: true
     labels:
       app: monitoring
     chart: prometheus-community/kube-prometheus-stack
@@ -254,10 +277,10 @@ releases:
       - ./env/{{ .Environment.Name }}/proxy.values.yaml
 
 
-  - name: pgadmin
-    namespace: database
-    chart: runix/pgadmin4
-    needs:
-      - database/postgres-cluster
-    values:
-      - ./values/pgadmin.yaml.gotmpl
+#  - name: pgadmin
+#    namespace: database
+#    chart: runix/pgadmin4
+#    needs:
+#      - database/postgres-cluster
+#    values:
+#      - ./values/pgadmin.yaml.gotmpl
