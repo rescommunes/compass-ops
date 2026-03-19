@@ -71,6 +71,7 @@ releases:
     namespace: kube-system
     chart: raw/raw
     version: 2.0.2
+    wait: false
     values:
       - resources:
           - apiVersion: v1
