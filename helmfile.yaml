@@ -1,5 +1,5 @@
 helmDefaults:
-  wait: true
+  wait: false
   timeout: 600
   createNamespace: false
 
