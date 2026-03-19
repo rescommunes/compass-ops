@@ -133,7 +133,7 @@ env:
         memory: "64Mi"
       limits:
         cpu: "100m"
-        memory: "128Mi"
+        memory: "256Mi"
 
     # Tempo - distributed tracing backend
     # Actual usage: ~40MB
