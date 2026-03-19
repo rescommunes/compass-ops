@@ -23,28 +23,38 @@ queryFrontend:
 compactor:
   replicas: 0
 
-# Storage config - match Loki's pattern
-storage:
-  trace:
-    backend: local
-    wal:
-      path: /var/tempo/wal
-    local:
-      path: /var/tempo/blocks
-
-# OTLP receiver to accept traces from OTel collector
+# Tempo configuration
 tempo:
-  config:
-    server:
-      http_listen_port: 3100
-    distributor:
-      receivers:
-        otlp:
-          protocols:
-            http:
-              endpoint: 0.0.0.0:4318
-    ingester:
-      max_block_duration: 5m
+  # Storage config - match Loki's pattern
+  # Redis cache for Tempo (bloom filters, parquet footers, search results)
+  # Uses database 0 - other databases reserved for other services
+  storage:
+    trace:
+      backend: local
+      wal:
+        path: /var/tempo/wal
+      local:
+        path: /var/tempo/blocks
+      cache:
+        caches:
+          - roles:
+              - bloom
+              - parquet-footer
+              - frontend-search
+            redis:
+              endpoint: {{ .Values.env.secrets.redis.password }}@redis.database.svc.cluster.local:6379
+              db: 0
+              timeout: 2s
+  server:
+    http_listen_port: 3100
+  # Note: the chart uses 'receivers' not 'distributors.receivers'
+  receivers:
+    otlp:
+      protocols:
+        http:
+          endpoint: 0.0.0.0:4318
+  ingester:
+    max_block_duration: 5m
 
 # Service configuration
 service:

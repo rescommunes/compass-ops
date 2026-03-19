@@ -114,6 +114,7 @@ releases:
     version: "~65.0.0"
     needs:
       - kube-system/create-namespaces
+      - database/redis
     secrets:
       - ./env/{{ .Environment.Name }}/secrets.sops.yaml
     values:
@@ -170,6 +171,9 @@ releases:
     version: "1.18.0"
     needs:
       - kube-system/create-namespaces
+      - database/redis
+    secrets:
+      - ./env/{{ .Environment.Name }}/secrets.sops.yaml
     values:
       - ./values/tempo.yaml.gotmpl
 
@@ -226,6 +230,25 @@ releases:
         value: true
     values:
       - ./values/cnpg-operator.yaml.gotmpl
+
+  - name: redis-secrets
+    namespace: database
+    chart: ./charts/redis
+    needs:
+      - kube-system/create-namespaces
+    secrets:
+      - ./env/{{ .Environment.Name }}/secrets.sops.yaml
+
+  - name: redis
+    namespace: database
+    chart: oci://registry-1.docker.io/cloudpirates/redis
+    version: "0.26.5"
+    needs:
+      - database/redis-secrets
+    secrets:
+      - ./env/{{ .Environment.Name }}/secrets.sops.yaml
+    values:
+      - ./values/redis.yaml.gotmpl
 
   - name: postgres
     namespace: database

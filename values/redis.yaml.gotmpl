@@ -24,10 +24,13 @@ config:
     protected-mode no
     appendonly yes
     save ""
-
-extraConfig: |
-  maxmemory {{ .Values.env.resources.redis.maxmemory }}
-  maxmemory-policy allkeys-lru
+    # Databases for different services:
+    # 0: Tempo cache (bloom filters, parquet footers, search)
+    # 1: Grafana sessions
+    # 2-15: Reserved for future use
+    databases 16
+    maxmemory {{ .Values.env.resources.redis.maxmemory }}
+    maxmemory-policy allkeys-lru
 
 resources:
   {{- toYaml .Values.env.resources.redis.pod | nindent 2 }}

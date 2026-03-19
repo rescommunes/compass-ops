@@ -9,6 +9,15 @@ grafana:
         enabled: false
     resources:
         {{- toYaml .Values.env.resources.grafana | nindent 8 }}
+    # Redis session storage (database 1)
+    # Note: password is injected via secrets reference
+    grafana.ini:
+        session:
+            provider: redis
+            provider_config: addr=redis.database.svc.cluster.local:6379,db=1,password={{ .Values.env.secrets.redis.password }},pool_size=100
+        auth.anonymous:
+            enabled: true
+            org_role: Admin
     additionalDataSources:
         - access: proxy
           jsonData:
@@ -50,10 +59,6 @@ grafana:
           type: prometheus
           uid: demo_prometheus
           url: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
-    grafana.ini:
-        auth.anonymous:
-            enabled: true
-            org_role: Admin
     sidecar:
         datasources:
             # we already created Prometheus datasource with static UID
