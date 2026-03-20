@@ -1,0 +1,12 @@
+{{- if .Values.dashboards.redis.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-compass-dashboard
+  namespace: {{ .Values.dashboards.redis.namespace }}
+  labels:
+    grafana_dashboard: "1"
+data:
+  redis-compass-dashboard.json: |
+{{ .Files.Get "dashboards/redis-compass-dashboard.json" | indent 4 }}
+{{- end }}

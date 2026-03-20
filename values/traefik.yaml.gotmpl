@@ -39,5 +39,37 @@ ingressRoute:
   dashboard:
     enabled: false
 
+ports:
+  traefik:
+    port: 9000
+    expose:
+      default: true
+    exposedPort: 9000
+    protocol: TCP
+  metrics:
+    port: 9100
+    expose:
+      default: false
+    exposedPort: 9100
+    protocol: TCP
+
+metrics:
+  prometheus:
+    enabled: true
+    entryPoint: metrics
+    service:
+      enabled: true
+    serviceMonitor:
+      enabled: true
+      labels:
+        release: kube-prometheus-stack
+      namespace: monitoring
+      namespaceSelector:
+        matchNames:
+          - networking
+      endpoints:
+        - path: /metrics
+          port: metrics
+
 resources:
   {{- toYaml .Values.env.resources.traefik | nindent 2 }}

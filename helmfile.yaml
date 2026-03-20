@@ -47,9 +47,6 @@ repositories:
   - name: prometheus-community
     url: https://prometheus-community.github.io/helm-charts
 
-  # https://github.com/cloudnative-pg/grafana-dashboards
-  - name: cnpg-grafana
-    url: https://cloudnative-pg.github.io/grafana-dashboards
   # https://artifacthub.io/packages/helm/runix/pgadmin4
   - name: runix
     url: https://helm.runix.net
@@ -203,13 +200,6 @@ releases:
       - kube-system/create-namespaces
     values:
       - ./values/otel-collector.yaml.gotmpl
-
-  - name: cnpg-grafana
-    namespace: monitoring
-    chart: cnpg-grafana/cluster
-    version: "0.0.5"
-    needs:
-      - kube-system/create-namespaces
 
   - name: grafana-dashboards
     namespace: monitoring

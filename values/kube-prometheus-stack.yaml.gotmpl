@@ -60,11 +60,25 @@ grafana:
           uid: demo_prometheus
           url: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
     sidecar:
+        dashboards:
+            enabled: true
         datasources:
             # we already created Prometheus datasource with static UID
             defaultDatasourceEnabled: false
     testFramework:
         enabled: false
+    dashboardProviders:
+        dashboardproviders.yaml:
+            apiVersion: 1
+            providers:
+              - name: 'default'
+                orgId: 1
+                folder: ''
+                type: file
+                disableDeletion: false
+                allowUiUpdates: false
+                options:
+                  path: /var/lib/grafana/dashboards/default
 
 prometheus:
     prometheusSpec:

@@ -1,0 +1,12 @@
+{{- if .Values.dashboards.loki.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: loki-compass-dashboard
+  namespace: {{ .Values.dashboards.loki.namespace }}
+  labels:
+    grafana_dashboard: "1"
+data:
+  loki-compass-dashboard.json: |
+{{ .Files.Get "dashboards/loki-compass-dashboard.json" | indent 4 }}
+{{- end }}

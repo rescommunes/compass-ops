@@ -2,3 +2,21 @@ dashboards:
   logging:
     enabled: true
     namespace: monitoring
+  traefik:
+    enabled: true
+    namespace: monitoring
+  redis:
+    enabled: true
+    namespace: monitoring
+  postgres:
+    enabled: true
+    namespace: monitoring
+  loki:
+    enabled: true
+    namespace: monitoring
+  otelCollector:
+    enabled: true
+    namespace: monitoring
+  certManager:
+    enabled: true
+    namespace: monitoring

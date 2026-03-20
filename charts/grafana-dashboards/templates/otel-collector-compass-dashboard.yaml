@@ -1,0 +1,12 @@
+{{- if .Values.dashboards.otelCollector.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-collector-compass-dashboard
+  namespace: {{ .Values.dashboards.otelCollector.namespace }}
+  labels:
+    grafana_dashboard: "1"
+data:
+  otel-collector-compass-dashboard.json: |
+{{ .Files.Get "dashboards/otel-collector-compass-dashboard.json" | indent 4 }}
+{{- end }}

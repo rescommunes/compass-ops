@@ -19,6 +19,9 @@ env/**/proxy.values.yaml
 
 .sops.yaml
 
+# Agent instructions (local only)
+AGENTS.md
+
 # macOS
 .DS_Store
 .AppleDouble
