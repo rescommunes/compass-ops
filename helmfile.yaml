@@ -250,16 +250,15 @@ releases:
     values:
       - ./values/redis.yaml.gotmpl
 
-  - name: postgres
+  - name: postgres-secrets
     namespace: database
-    chart: ./charts/postgres
+    chart: ./charts/postgres-secrets
     needs:
-      - database/cnpg-operator
+      - kube-system/create-namespaces
     secrets:
       - ./env/{{ .Environment.Name }}/secrets.sops.yaml
     values:
       - ./env/{{ .Environment.Name }}/values.yaml
-      - ./env/{{ .Environment.Name }}/proxy.values.yaml
 
   - name: postgres-cluster
     namespace: database
@@ -267,11 +266,23 @@ releases:
     version: "~0.3.1"
     needs:
       - database/cnpg-operator
+      - database/postgres-secrets
     secrets:
       - ./env/{{ .Environment.Name }}/secrets.sops.yaml
     values:
       - ./env/{{ .Environment.Name }}/values.yaml
       - ./values/postgres-cluster.yaml.gotmpl
+
+  - name: postgres-databases
+    namespace: database
+    chart: ./charts/postgres
+    needs:
+      - database/postgres-cluster
+    secrets:
+      - ./env/{{ .Environment.Name }}/secrets.sops.yaml
+    values:
+      - ./env/{{ .Environment.Name }}/values.yaml
+      - ./env/{{ .Environment.Name }}/proxy.values.yaml
 
   - name: mailhog
     namespace: tools
@@ -286,7 +297,7 @@ releases:
     chart: ory/kratos
     version: "~0.58.0"
     needs:
-      - database/postgres-cluster
+      - database/postgres-databases
       - tools/mailhog
     secrets:
       - ./env/{{ .Environment.Name }}/secrets.sops.yaml
@@ -307,7 +318,7 @@ releases:
     chart: ./charts/application
     needs:
       - networking/traefik-routes
-      - database/postgres-cluster
+      - database/postgres-databases
     secrets:
       - ./env/{{ .Environment.Name }}/secrets.sops.yaml
     values:

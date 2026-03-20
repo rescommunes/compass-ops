@@ -1,0 +1,2 @@
+# Default values for postgres-secrets chart
+# Actual values are provided by env/dev/secrets.sops.yaml
